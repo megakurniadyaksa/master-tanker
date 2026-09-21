@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Dashboard - Master Tanker</title>
 
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -129,6 +134,10 @@
             padding: 8px 12px;
         }
 
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
         .message {
             margin-top: 15px;
             padding: 12px;
@@ -147,6 +156,12 @@
             display: block;
             background: #fee2e2;
             color: #991b1b;
+        }
+
+        .message.info {
+            display: block;
+            background: #dbeafe;
+            color: #1e40af;
         }
 
         .monitoring-grid {
@@ -228,22 +243,43 @@
             font-size: 14px;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1100px) {
+
             .monitoring-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 190px;
+            }
+
+            .content {
+                margin-left: 190px;
+                padding: 20px;
             }
 
             .upload-row {
                 flex-direction: column;
                 align-items: stretch;
             }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
-<!-- SIDEBAR -->
+
+<!-- ==============================
+     SIDEBAR
+============================== -->
 
 <div class="sidebar">
 
@@ -270,7 +306,10 @@
 </div>
 
 
-<!-- CONTENT -->
+
+<!-- ==============================
+     CONTENT
+============================== -->
 
 <div class="content">
 
@@ -279,9 +318,10 @@
     </h1>
 
 
-    <!-- ==========================================
-         UPLOAD LO CLOSING
-    =========================================== -->
+
+    <!-- ==============================
+         UPLOAD LO
+    =============================== -->
 
     <div class="card">
 
@@ -342,9 +382,10 @@
     </div>
 
 
-    <!-- ==========================================
+
+    <!-- ==============================
          RIWAYAT UPLOAD
-    =========================================== -->
+    =============================== -->
 
     <div class="card">
 
@@ -357,15 +398,29 @@
             <thead>
 
                 <tr>
-                    <th>Tanggal</th>
-                    <th>Nama File</th>
-                    <th>Jumlah Tanker Rit</th>
-                    <th>Aksi</th>
+
+                    <th>
+                        Tanggal
+                    </th>
+
+                    <th>
+                        Nama File
+                    </th>
+
+                    <th>
+                        Jumlah Tanker Rit
+                    </th>
+
+                    <th>
+                        Aksi
+                    </th>
+
                 </tr>
 
             </thead>
 
             <tbody id="uploadHistory">
+
             </tbody>
 
         </table>
@@ -373,9 +428,10 @@
     </div>
 
 
-    <!-- ==========================================
+
+    <!-- ==============================
          DASHBOARD MONITORING
-    =========================================== -->
+    =============================== -->
 
     <div class="card">
 
@@ -407,8 +463,7 @@
             class="tanggal-monitoring"
             id="tanggalMonitoringText"
             style="margin-top:15px;"
-        >
-        </div>
+        ></div>
 
 
         <div class="monitoring-grid">
@@ -483,9 +538,10 @@
     </div>
 
 
-    <!-- ==========================================
+
+    <!-- ==============================
          TANKER TIDAK RIT
-    =========================================== -->
+    =============================== -->
 
     <div class="card">
 
@@ -529,6 +585,7 @@
 
 
             <tbody id="blokirTable">
+
             </tbody>
 
         </table>
@@ -536,9 +593,10 @@
     </div>
 
 
-    <!-- ==========================================
+
+    <!-- ==============================
          HASIL
-    =========================================== -->
+    =============================== -->
 
     <div class="card">
 
@@ -569,10 +627,13 @@
 
     </div>
 
+
 </div>
 
 
+
 <script>
+
 
 /* =====================================================
    NAMA FILE MASTER
@@ -581,43 +642,34 @@
 const namaFileMaster = "data tanker.xlsx";
 
 
+
 /* =====================================================
-   LOCAL STORAGE
+   DATA
 ===================================================== */
 
 let dataTanker =
     JSON.parse(
-        localStorage.getItem("dataTanker")
-    ) || [];
+        localStorage.getItem("dataTanker") || "[]"
+    );
 
 
 let dataRit =
     JSON.parse(
-        localStorage.getItem("dataRit")
-    ) || {};
+        localStorage.getItem("dataRit") || "{}"
+    );
 
 
 let dataBlokir =
     JSON.parse(
-        localStorage.getItem("dataBlokir")
-    ) || {};
+        localStorage.getItem("dataBlokir") || "{}"
+    );
 
 
 let uploadRecords =
     JSON.parse(
-        localStorage.getItem("uploadRecords")
-    ) || [];
+        localStorage.getItem("uploadRecords") || "[]"
+    );
 
-
-/*
-Data awal dari Excel sudah pernah dibaca
-atau belum
-*/
-
-let dataExcelSudahDibaca =
-    localStorage.getItem(
-        "excelRitSudahDibaca"
-    ) === "true";
 
 
 /* =====================================================
@@ -638,30 +690,18 @@ window.addEventListener(
 );
 
 
+
 /* =====================================================
-   BACA EXCEL AWAL
+   BACA EXCEL TERBARU
 ===================================================== */
 
 async function bacaExcelAwal() {
-
-    /*
-    Kalau sudah pernah dibaca,
-    jangan baca ulang supaya data
-    yang sudah ada tidak berubah.
-    */
-
-    if (dataExcelSudahDibaca) {
-
-        return;
-
-    }
-
 
     try {
 
         const response =
             await fetch(
-                namaFileMaster
+                namaFileMaster + "?v=" + Date.now()
             );
 
 
@@ -687,18 +727,14 @@ async function bacaExcelAwal() {
             );
 
 
-        /*
-        ==========================================
-        1. BACA MASTER TANKER
-        ==========================================
-        */
+
+        /* ==========================================
+           RESET MASTER TANKER
+           AGAR MENGIKUTI EXCEL TERBARU
+        ========================================== */
 
         let masterExcel = [];
 
-
-        /*
-        Cari sheet bernama data
-        */
 
         const sheetData =
             workbook.Sheets["data"];
@@ -715,10 +751,6 @@ async function bacaExcelAwal() {
                     }
                 );
 
-
-            /*
-            Kolom B = Tanker Number
-            */
 
             masterExcel =
                 rowsData
@@ -737,12 +769,11 @@ async function bacaExcelAwal() {
         }
 
 
-        /*
-        ==========================================
-        2. KALAU SHEET DATA KOSONG
-        AMBIL DARI SHEET MONITORING
-        ==========================================
-        */
+
+        /* ==========================================
+           KALAU SHEET DATA KOSONG
+           COBA SHEET MONITORING
+        ========================================== */
 
         if (
             masterExcel.length === 0
@@ -758,7 +789,9 @@ async function bacaExcelAwal() {
                         .toLowerCase()
                         === "data"
                 ) {
+
                     continue;
+
                 }
 
 
@@ -777,10 +810,6 @@ async function bacaExcelAwal() {
                         }
                     );
 
-
-                /*
-                Kolom B = Tanker Number
-                */
 
                 const kandidat =
                     rows
@@ -814,79 +843,65 @@ async function bacaExcelAwal() {
         }
 
 
-        /*
-        Simpan Master Tanker
-        */
+
+        /* ==========================================
+           HAPUS DUPLIKAT
+        ========================================== */
+
+        masterExcel =
+            [...new Set(masterExcel)];
+
+
+
+        /* ==========================================
+           SORT MASTER TANKER
+        ========================================== */
+
+        masterExcel.sort(
+            (a, b) =>
+                a.localeCompare(
+                    b,
+                    undefined,
+                    {
+                        numeric: true,
+                        sensitivity: "base"
+                    }
+                )
+        );
+
+
+
+        /* ==========================================
+           MASTER TANKER MENGIKUTI EXCEL TERBARU
+        ========================================== */
 
         if (
             masterExcel.length > 0
         ) {
 
-            /*
-            Hapus duplikat untuk master.
-            */
-
-            const unik =
-                [...new Set(
-                    masterExcel
-                )];
+            dataTanker =
+                masterExcel;
 
 
-            unik.sort(
-                (a, b) =>
-                    a.localeCompare(
-                        b,
-                        undefined,
-                        {
-                            numeric: true,
-                            sensitivity: "base"
-                        }
-                    )
+            localStorage.setItem(
+                "dataTanker",
+                JSON.stringify(
+                    dataTanker
+                )
             );
-
-
-            /*
-            Kalau localStorage belum ada,
-            isi dari Excel.
-
-            Kalau sudah ada,
-            jangan hapus data manual
-            yang dibuat di Data Tanker.
-            */
-
-            if (
-                dataTanker.length === 0
-            ) {
-
-                dataTanker =
-                    unik;
-
-                localStorage.setItem(
-                    "dataTanker",
-                    JSON.stringify(
-                        dataTanker
-                    )
-                );
-
-            }
 
         }
 
 
-        /*
-        ==========================================
-        3. BACA RIWAYAT RIT
-        ==========================================
-        */
+
+        /* ==========================================
+           BACA DATA RIT DARI EXCEL
+        ========================================== */
 
         for (
             const namaSheet
             of workbook.SheetNames
         ) {
-
-            /*
-            Sheet data bukan sheet rit.
-            */
 
             if (
                 namaSheet
@@ -905,13 +920,9 @@ async function bacaExcelAwal() {
                 );
 
 
-            /*
-            Kalau nama sheet tidak bisa
-            dibaca sebagai bulan + tahun,
-            lewati.
-            */
-
-            if (!tanggalSheet) {
+            if (
+                !tanggalSheet
+            ) {
 
                 continue;
 
@@ -934,13 +945,6 @@ async function bacaExcelAwal() {
                 );
 
 
-            /*
-            Baris pertama adalah header:
-            A = Nomor
-            B = Tanker Number
-            C dst = tanggal
-            */
-
             if (
                 rows.length < 2
             ) {
@@ -954,9 +958,10 @@ async function bacaExcelAwal() {
                 rows[0];
 
 
-            /*
-            Mulai dari kolom C
-            */
+
+            /* ==================================
+               TANGGAL
+            ================================== */
 
             for (
                 let col = 2;
@@ -964,17 +969,11 @@ async function bacaExcelAwal() {
                 col++
             ) {
 
-
                 const hari =
                     parseInt(
                         header[col]
                     );
 
-
-                /*
-                Kalau header bukan angka,
-                lewati.
-                */
 
                 if (
                     isNaN(hari)
@@ -993,10 +992,6 @@ async function bacaExcelAwal() {
                     );
 
 
-                /*
-                Pastikan tanggal valid
-                */
-
                 if (!tanggal) {
 
                     continue;
@@ -1005,23 +1000,17 @@ async function bacaExcelAwal() {
 
 
                 /*
-                Pastikan array tanggal
-                tersedia
+                Reset data rit dari Excel
+                untuk tanggal tersebut.
                 */
 
-                if (
-                    !dataRit[tanggal]
-                ) {
-
-                    dataRit[tanggal] =
-                        [];
-
-                }
+                dataRit[tanggal] = [];
 
 
-                /*
-                Baca setiap tanker
-                */
+
+                /* ==========================
+                   BACA TANKER
+                ========================== */
 
                 for (
                     let row = 1;
@@ -1029,21 +1018,13 @@ async function bacaExcelAwal() {
                     row++
                 ) {
 
-
                     const tanker =
                         String(
-                            rows[row][1] ||
-                            ""
+                            rows[row][1] || ""
                         ).trim();
 
 
-                    /*
-                    Tidak ada nomor tanker
-                    */
-
-                    if (
-                        !tanker
-                    ) {
+                    if (!tanker) {
 
                         continue;
 
@@ -1052,45 +1033,19 @@ async function bacaExcelAwal() {
 
                     const nilai =
                         String(
-                            rows[row][col] ||
-                            ""
+                            rows[row][col] || ""
                         )
                         .trim()
                         .toUpperCase();
 
 
-                    /*
-                    Kalau ada V,
-                    berarti rit.
-                    */
-
                     if (
                         nilai === "V"
                     ) {
 
-                        const sudahAda =
-                            dataRit[
-                                tanggal
-                            ].some(
-                                item =>
-                                    item
-                                        .toLowerCase()
-                                        === tanker
-                                            .toLowerCase()
-                            );
-
-
-                        if (
-                            !sudahAda
-                        ) {
-
-                            dataRit[
-                                tanggal
-                            ].push(
-                                tanker
-                            );
-
-                        }
+                        dataRit[tanggal].push(
+                            tanker
+                        );
 
                     }
 
@@ -1101,9 +1056,23 @@ async function bacaExcelAwal() {
         }
 
 
-        /*
-        Simpan data rit
-        */
+
+        /* ==========================================
+           HAPUS DUPLIKAT RIT
+        ========================================== */
+
+        Object.keys(dataRit).forEach(
+            tanggal => {
+
+                dataRit[tanggal] =
+                    [...new Set(
+                        dataRit[tanggal]
+                    )];
+
+            }
+        );
+
+
 
         localStorage.setItem(
             "dataRit",
@@ -1113,34 +1082,29 @@ async function bacaExcelAwal() {
         );
 
 
-        /*
-        Tandai sudah dibaca
-        */
 
-        localStorage.setItem(
-            "excelRitSudahDibaca",
-            "true"
+        tampilkanPesan(
+            "Data Master Tanker berhasil diperbarui dari Excel.",
+            "success"
         );
-
-
-        dataExcelSudahDibaca =
-            true;
 
 
     } catch (error) {
 
         console.error(error);
 
+
         tampilkanPesan(
             "Excel belum berhasil dibaca. " +
             "Pastikan index.html dan data tanker.xlsx " +
-            "dibuka melalui Live Server.",
+            "berada di folder yang sama.",
             "error"
         );
 
     }
 
 }
+
 
 
 /* =====================================================
@@ -1222,6 +1186,7 @@ function ambilBulanDanTahun(
 }
 
 
+
 /* =====================================================
    BUAT TANGGAL
 ===================================================== */
@@ -1240,10 +1205,6 @@ function buatTanggal(
         );
 
 
-    /*
-    Cek supaya tanggal valid.
-    */
-
     if (
         date.getFullYear() !== tahun ||
         date.getMonth() !== bulan - 1 ||
@@ -1255,37 +1216,16 @@ function buatTanggal(
     }
 
 
-    const y =
-        tahun.toString();
-
-
-    const m =
-        String(
-            bulan
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    const d =
-        String(
-            hari
-        ).padStart(
-            2,
-            "0"
-        );
-
-
     return (
-        y +
+        tahun +
         "-" +
-        m +
+        String(bulan).padStart(2, "0") +
         "-" +
-        d
+        String(hari).padStart(2, "0")
     );
 
 }
+
 
 
 /* =====================================================
@@ -1382,11 +1322,13 @@ async function prosesUpload() {
             );
 
 
-        /*
-        Cari baris header
-        */
+
+        /* ==================================
+           CARI KOLOM TANKER NUMBER
+        ================================== */
 
         let headerRow = -1;
+
         let indexTanker = -1;
 
 
@@ -1421,6 +1363,7 @@ async function prosesUpload() {
             ) {
 
                 headerRow = r;
+
                 indexTanker = index;
 
                 break;
@@ -1441,9 +1384,10 @@ async function prosesUpload() {
         }
 
 
-        /*
-        Ambil tanker dari LO
-        */
+
+        /* ==================================
+           AMBIL TANKER DARI LO
+        ================================== */
 
         const tankerLO =
             rows
@@ -1463,20 +1407,16 @@ async function prosesUpload() {
                 );
 
 
-        /*
-        Hilangkan duplikat
-        */
-
         const tankerUnik =
             [...new Set(
                 tankerLO
             )];
 
 
-        /*
-        Buat daftar Master Tanker
-        untuk pencocokan
-        */
+
+        /* ==================================
+           COCOKKAN MASTER
+        ================================== */
 
         const masterMap =
             new Map();
@@ -1496,11 +1436,6 @@ async function prosesUpload() {
             }
         );
 
-
-        /*
-        Hanya tanker yang ada
-        di Master Tanker
-        */
 
         const tankerMatch =
             tankerUnik
@@ -1522,36 +1457,31 @@ async function prosesUpload() {
                 );
 
 
-        /*
-        Kalau tanggal belum ada
-        */
+
+        /* ==================================
+           BUAT DATA RIT
+        ================================== */
 
         if (
             !dataRit[tanggal]
         ) {
 
-            dataRit[tanggal] =
-                [];
+            dataRit[tanggal] = [];
 
         }
 
-
-        /*
-        Tambahkan rit
-        */
 
         tankerMatch.forEach(
             tanker => {
 
                 const sudahAda =
-                    dataRit[
-                        tanggal
-                    ].some(
+                    dataRit[tanggal].some(
                         item =>
                             item
                                 .toLowerCase()
-                                === tanker
-                                    .toLowerCase()
+                                ===
+                            tanker
+                                .toLowerCase()
                     );
 
 
@@ -1559,9 +1489,7 @@ async function prosesUpload() {
                     !sudahAda
                 ) {
 
-                    dataRit[
-                        tanggal
-                    ].push(
+                    dataRit[tanggal].push(
                         tanker
                     );
 
@@ -1571,23 +1499,20 @@ async function prosesUpload() {
         );
 
 
-        /*
-        Simpan upload sebagai record
-        */
+
+        /* ==================================
+           SIMPAN RIWAYAT UPLOAD
+        ================================== */
 
         const record = {
 
-            id:
-                Date.now(),
+            id: Date.now(),
 
-            tanggal:
-                tanggal,
+            tanggal: tanggal,
 
-            namaFile:
-                file.name,
+            namaFile: file.name,
 
-            jumlah:
-                tankerMatch.length
+            jumlah: tankerMatch.length
 
         };
 
@@ -1613,17 +1538,18 @@ async function prosesUpload() {
         );
 
 
-        /*
-        Pilih tanggal monitoring
-        */
+
+        /* ==================================
+           UPDATE DASHBOARD
+        ================================== */
 
         document.getElementById(
             "tanggalMonitoringInput"
-        ).value =
-            tanggal;
+        ).value = tanggal;
 
 
         tampilkanDashboard();
+
 
         tampilkanRiwayatUpload();
 
@@ -1640,10 +1566,13 @@ async function prosesUpload() {
             "success"
         );
 
+    }
 
-    } catch (error) {
+
+    catch (error) {
 
         console.error(error);
+
 
         tampilkanPesan(
             "Gagal membaca file: " +
@@ -1656,8 +1585,9 @@ async function prosesUpload() {
 }
 
 
+
 /* =====================================================
-   TAMPILKAN DASHBOARD
+   DASHBOARD
 ===================================================== */
 
 function tampilkanDashboard() {
@@ -1666,30 +1596,25 @@ function tampilkanDashboard() {
         JSON.parse(
             localStorage.getItem(
                 "dataTanker"
-            )
-        ) || [];
+            ) || "[]"
+        );
 
 
     dataRit =
         JSON.parse(
             localStorage.getItem(
                 "dataRit"
-            )
-        ) || {};
+            ) || "{}"
+        );
 
 
     dataBlokir =
         JSON.parse(
             localStorage.getItem(
                 "dataBlokir"
-            )
-        ) || {};
+            ) || "{}"
+        );
 
-
-    /*
-    Kalau belum ada tanggal,
-    pakai tanggal terakhir
-    */
 
     let tanggal =
         document.getElementById(
@@ -1792,6 +1717,7 @@ function tampilkanDashboard() {
 }
 
 
+
 /* =====================================================
    HITUNG TIDAK RIT ≥ 7 HARI
 ===================================================== */
@@ -1813,14 +1739,7 @@ function hitungTidakRit(
                 );
 
 
-            /*
-            Kalau belum pernah rit,
-            untuk sementara tidak dimasukkan.
-            */
-
-            if (
-                !ritTerakhir
-            ) {
+            if (!ritTerakhir) {
 
                 return;
 
@@ -1862,6 +1781,7 @@ function hitungTidakRit(
 }
 
 
+
 /* =====================================================
    CARI RIT TERAKHIR
 ===================================================== */
@@ -1899,9 +1819,10 @@ function cariRitTerakhir(
                     item
                         .trim()
                         .toLowerCase()
-                        === tanker
-                            .trim()
-                            .toLowerCase()
+                        ===
+                    tanker
+                        .trim()
+                        .toLowerCase()
             );
 
 
@@ -1921,8 +1842,9 @@ function cariRitTerakhir(
 }
 
 
+
 /* =====================================================
-   TAMPILKAN LIST TIDAK RIT
+   TAMPILKAN TIDAK RIT
 ===================================================== */
 
 function tampilkanListBlokir(
@@ -1952,7 +1874,6 @@ function tampilkanListBlokir(
                 >
                     Tidak ada tanker yang
                     tidak rit ≥ 7 hari.
-
                 </td>
 
             </tr>
@@ -1998,11 +1919,7 @@ function tampilkanListBlokir(
                     <input
                         type="checkbox"
                         class="checkbox-blokir"
-                        ${
-                            checked
-                            ? "checked"
-                            : ""
-                        }
+                        ${checked ? "checked" : ""}
                         onchange="
                             ubahStatusBlokir(
                                 '${escapeQuotes(item.tanker)}',
@@ -2024,6 +1941,7 @@ function tampilkanListBlokir(
 }
 
 
+
 /* =====================================================
    BLOKIR
 ===================================================== */
@@ -2033,9 +1951,7 @@ function ubahStatusBlokir(
     status
 ) {
 
-    if (
-        status
-    ) {
+    if (status) {
 
         dataBlokir[tanker] =
             true;
@@ -2055,6 +1971,7 @@ function ubahStatusBlokir(
     );
 
 }
+
 
 
 /* =====================================================
@@ -2085,7 +2002,6 @@ function tampilkanRiwayatUpload() {
                     class="empty"
                 >
                     Belum ada upload LO Closing.
-
                 </td>
 
             </tr>
@@ -2158,6 +2074,7 @@ function tampilkanRiwayatUpload() {
 }
 
 
+
 /* =====================================================
    HAPUS UPLOAD
 ===================================================== */
@@ -2199,42 +2116,12 @@ function hapusUpload(
     }
 
 
-    /*
-    Hapus record
-    */
-
     uploadRecords =
         uploadRecords.filter(
             item =>
                 item.id !== id
         );
 
-
-    /*
-    Karena dataRit dari upload
-    sudah tergabung, kita rebuild
-    data rit dari seluruh upload.
-    */
-
-
-    /*
-    Ambil ulang data awal Excel
-    */
-
-    dataRit = {};
-
-
-    localStorage.removeItem(
-        "excelRitSudahDibaca"
-    );
-
-
-    /*
-    Kita perlu reload halaman supaya
-    Excel awal dibaca kembali,
-    lalu upload yang masih ada
-    ditambahkan lagi.
-    */
 
     localStorage.setItem(
         "uploadRecords",
@@ -2244,9 +2131,15 @@ function hapusUpload(
     );
 
 
+    /*
+    Untuk sekarang kita reload.
+    Data dari Excel akan dibaca kembali.
+    */
+
     location.reload();
 
 }
+
 
 
 /* =====================================================
@@ -2278,6 +2171,7 @@ function dapatkanTanggalTerbaru() {
     ];
 
 }
+
 
 
 /* =====================================================
@@ -2318,6 +2212,7 @@ function selisihHari(
 }
 
 
+
 /* =====================================================
    FORMAT TANGGAL
 ===================================================== */
@@ -2333,8 +2228,18 @@ function formatTanggal(
     }
 
 
-    const [tahun, bulan, hari] =
+    const bagian =
         tanggal.split("-");
+
+
+    const tahun =
+        bagian[0];
+
+    const bulan =
+        bagian[1];
+
+    const hari =
+        bagian[2];
 
 
     const namaBulan = [
@@ -2368,8 +2273,9 @@ function formatTanggal(
 }
 
 
+
 /* =====================================================
-   ESCAPE
+   ESCAPE QUOTES
 ===================================================== */
 
 function escapeQuotes(
@@ -2387,6 +2293,7 @@ function escapeQuotes(
         );
 
 }
+
 
 
 /* =====================================================
@@ -2415,6 +2322,7 @@ function tampilkanPesan(
 }
 
 
+
 /* =====================================================
    HASIL
 ===================================================== */
@@ -2428,5 +2336,7 @@ function lihatHasil() {
 
 </script>
 
+
 </body>
+
 </html>
