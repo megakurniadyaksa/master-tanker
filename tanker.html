@@ -208,165 +208,152 @@
 
 </head>
 
-
 <body>
 
+    <!-- SIDEBAR -->
 
-<!-- SIDEBAR -->
+    <div class="sidebar">
 
-<div class="sidebar">
+        <div class="logo">
+            MASTER TANKER
+        </div>
 
-    <div class="logo">
-        MASTER TANKER
+        <div class="menu">
+
+            <a href="index.html">
+                Dashboard
+            </a>
+
+            <a href="tanker.html" class="active">
+                Data Tanker
+            </a>
+
+            <a href="download.html">
+                Download Report
+            </a>
+
+        </div>
+
     </div>
 
-    <div class="menu">
 
-        <a href="index.html">
-            Dashboard
-        </a>
+    <!-- CONTENT -->
 
-        <a href="tanker.html" class="active">
+    <div class="content">
+
+        <h1>
             Data Tanker
-        </a>
-
-        <a href="download.html">
-            Download Report
-        </a>
-
-    </div>
-
-</div>
+        </h1>
 
 
+        <!-- TOTAL -->
 
-<!-- CONTENT -->
+        <div class="card">
 
-<div class="content">
+            <div class="summary">
+                Total Master Tanker
+            </div>
 
-    <h1>
-        Data Tanker
-    </h1>
+            <div
+                class="total"
+                id="totalTanker"
+            >
+                0
+            </div>
 
-
-
-    <!-- TOTAL -->
-
-    <div class="card">
-
-        <div class="summary">
-            Total Master Tanker
         </div>
 
-        <div
-            class="total"
-            id="totalTanker"
-        >
-            0
+
+        <!-- TAMBAH TANKER -->
+
+        <div class="card">
+
+            <h3>
+                Tambah Master Tanker
+            </h3>
+
+            <div class="form-row">
+
+                <input
+                    type="text"
+                    id="inputTanker"
+                    placeholder="Masukkan nomor tanker"
+                >
+
+                <button
+                    class="btn-add"
+                    onclick="tambahTanker()"
+                >
+                    + Tambah
+                </button>
+
+            </div>
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
         </div>
 
-    </div>
 
+        <!-- DAFTAR TANKER -->
 
+        <div class="card">
 
-    <!-- TAMBAH TANKER -->
-
-    <div class="card">
-
-        <h3>
-            Tambah Master Tanker
-        </h3>
-
-        <div class="form-row">
+            <h3>
+                Daftar Master Tanker
+            </h3>
 
             <input
                 type="text"
-                id="inputTanker"
-                placeholder="Masukkan nomor tanker"
+                id="searchTanker"
+                class="search-box"
+                placeholder="🔎 Cari Tanker Number..."
+                oninput="tampilkanData()"
             >
 
-            <button
-                class="btn-add"
-                onclick="tambahTanker()"
-            >
-                + Tambah
-            </button>
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th style="width:80px;">
+                            No
+                        </th>
+
+                        <th>
+                            Tanker Number
+                        </th>
+
+                        <th style="width:180px;">
+                            Aksi
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tankerTable">
+                </tbody>
+
+            </table>
 
         </div>
 
-        <div
-            id="message"
-            class="message"
-        ></div>
-
     </div>
-
-
-
-    <!-- DAFTAR TANKER -->
-
-    <div class="card">
-
-        <h3>
-            Daftar Master Tanker
-        </h3>
-
-        <input
-            type="text"
-            id="searchTanker"
-            class="search-box"
-            placeholder="🔎 Cari Tanker Number..."
-            oninput="tampilkanData()"
-        >
-
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th style="width:80px;">
-                        No
-                    </th>
-
-                    <th>
-                        Tanker Number
-                    </th>
-
-                    <th style="width:180px;">
-                        Aksi
-                    </th>
-
-                </tr>
-
-            </thead>
-
-            <tbody id="tankerTable">
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-
 
 
 <script>
-
 
 /* =====================================================
    KONFIGURASI
 ===================================================== */
 
-const namaFileMaster =
-    "data tanker.xlsx";
+const namaFileMaster = "data tanker.xlsx";
 
-const STORAGE_KEY =
-    "dataTanker";
-
+const STORAGE_KEY = "dataTanker";
 
 
 /* =====================================================
@@ -375,11 +362,8 @@ const STORAGE_KEY =
 
 let dataTanker =
     JSON.parse(
-        localStorage.getItem(
-            STORAGE_KEY
-        ) || "[]"
+        localStorage.getItem(STORAGE_KEY) || "[]"
     );
-
 
 
 /* =====================================================
@@ -390,16 +374,7 @@ window.addEventListener(
     "DOMContentLoaded",
     async function() {
 
-        /*
-        Baca Excel TERBARU dulu.
-        */
-
         await bacaExcelMaster();
-
-        /*
-        Setelah selesai,
-        tampilkan data.
-        */
 
         tampilkanData();
 
@@ -407,9 +382,8 @@ window.addEventListener(
 );
 
 
-
 /* =====================================================
-   BACA EXCEL MASTER TERBARU
+   BACA EXCEL MASTER
 ===================================================== */
 
 async function bacaExcelMaster() {
@@ -419,12 +393,12 @@ async function bacaExcelMaster() {
         "loading"
     );
 
-
     try {
 
         /*
-        Tambahkan timestamp supaya
-        browser tidak menggunakan cache lama.
+        Baca file Excel terbaru.
+        Timestamp digunakan agar browser
+        tidak menggunakan cache lama.
         */
 
         const response =
@@ -458,7 +432,7 @@ async function bacaExcelMaster() {
 
 
         /*
-        Cari sheet "data".
+        Cari sheet bernama "data".
         */
 
         let worksheet =
@@ -492,6 +466,13 @@ async function bacaExcelMaster() {
 
         /*
         Baca Excel sebagai array.
+
+        Contoh:
+
+        rows[0] = ["Nomor", "Tanker Number"]
+        rows[1] = [1, "AB86760E"]
+        rows[2] = [2, "AB8630E"]
+        dst.
         */
 
         const rows =
@@ -504,6 +485,10 @@ async function bacaExcelMaster() {
             );
 
 
+        /*
+        Pastikan ada data.
+        */
+
         if (rows.length < 2) {
 
             throw new Error(
@@ -514,41 +499,67 @@ async function bacaExcelMaster() {
 
 
         /*
-        Ambil kolom Tanker Number.
+        =================================================
+        MEMBACA TANKER NUMBER
+        =================================================
 
-        File kamu:
-        Kolom A = nomor
-        Kolom B = tanker number
+        Baris pertama = HEADER
+        Jadi mulai dari index 1.
 
-        Jadi kita ambil row[1].
+        Kolom B = index 1.
+
+        541 baris Excel
+        - 1 baris header
+        = 540 Master Tanker
         */
 
-        let daftarTanker = [];
+        const daftarTanker = [];
 
-        for (let i = 1; i < rows.length; i++) {
 
-            const tanker = String(
-                rows[i][1] || ""
+        for (
+            let i = 1;
+            i < rows.length;
+            i++
+        ) {
+
+            const tanker =
+                String(
+                    rows[i][1] ?? ""
                 ).trim();
 
+
+            /*
+            Hanya masukkan jika
+            kolom Tanker Number berisi.
+            */
+
             if (tanker !== "") {
-            daftarTanker.push(tanker);
+
+                daftarTanker.push(
+                    tanker
+                );
+
             }
+
         }
 
 
         /*
-        Hilangkan duplikat.
-        */
+        =================================================
+        TIDAK MENGGUNAKAN SET
+        =================================================
 
-        daftarTanker =
-            [...new Set(
-                daftarTanker
-            )];
+        Sengaja tidak menggunakan:
+
+        [...new Set(...)]
+
+        supaya tidak ada data tanker
+        yang berkurang karena dianggap duplikat.
+        */
 
 
         /*
-        Urutkan otomatis.
+        Urutkan Tanker Number.
         */
 
         daftarTanker.sort(
@@ -565,13 +576,8 @@ async function bacaExcelMaster() {
 
 
         /*
-        PENTING:
-
-        Excel sekarang menjadi
-        sumber Master Tanker.
-
-        Jadi kalau Excel berubah,
-        website ikut berubah.
+        Excel menjadi sumber utama
+        Master Tanker.
         */
 
         dataTanker =
@@ -579,8 +585,7 @@ async function bacaExcelMaster() {
 
 
         /*
-        Simpan versi terbaru
-        ke localStorage.
+        Simpan ke localStorage.
         */
 
         localStorage.setItem(
@@ -592,7 +597,7 @@ async function bacaExcelMaster() {
 
 
         /*
-        Tampilkan data.
+        Tampilkan.
         */
 
         tampilkanData();
@@ -611,8 +616,7 @@ async function bacaExcelMaster() {
 
         /*
         Kalau Excel gagal dibaca,
-        tetap gunakan data lama
-        yang ada di localStorage.
+        gunakan data yang tersimpan.
         */
 
         dataTanker =
@@ -636,7 +640,6 @@ async function bacaExcelMaster() {
     }
 
 }
-
 
 
 /* =====================================================
@@ -777,7 +780,6 @@ function tampilkanData() {
 }
 
 
-
 /* =====================================================
    TAMBAH TANKER
 ===================================================== */
@@ -811,11 +813,8 @@ function tambahTanker() {
     const sudahAda =
         dataTanker.some(
             tanker =>
-                tanker
-                    .toLowerCase()
-                ===
-                nomor
-                    .toLowerCase()
+                tanker.toLowerCase() ===
+                nomor.toLowerCase()
         );
 
 
@@ -873,7 +872,6 @@ function tambahTanker() {
 }
 
 
-
 /* =====================================================
    EDIT TANKER
 ===================================================== */
@@ -920,14 +918,9 @@ function editTanker(index) {
     const duplikat =
         dataTanker.some(
             (tanker, i) =>
-
                 i !== index &&
-
-                tanker
-                    .toLowerCase()
-                ===
-                nomor
-                    .toLowerCase()
+                tanker.toLowerCase() ===
+                nomor.toLowerCase()
         );
 
 
@@ -980,7 +973,6 @@ function editTanker(index) {
 }
 
 
-
 /* =====================================================
    HAPUS TANKER
 ===================================================== */
@@ -1031,7 +1023,6 @@ function hapusTanker(index) {
 }
 
 
-
 /* =====================================================
    PESAN
 ===================================================== */
@@ -1058,7 +1049,6 @@ function tampilkanPesan(
 }
 
 </script>
-
 
 </body>
 
