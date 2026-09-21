@@ -2,7 +2,6 @@
 <html lang="id">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -11,7 +10,6 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
     <style>
-
         * {
             box-sizing: border-box;
         }
@@ -72,7 +70,7 @@
             border-radius: 12px;
             padding: 22px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .summary {
@@ -188,7 +186,6 @@
         }
 
         @media (max-width: 800px) {
-
             .sidebar {
                 width: 190px;
             }
@@ -201,17 +198,13 @@
             .form-row {
                 flex-direction: column;
             }
-
         }
-
     </style>
-
 </head>
 
 <body>
 
     <!-- SIDEBAR -->
-
     <div class="sidebar">
 
         <div class="logo">
@@ -238,7 +231,6 @@
 
 
     <!-- CONTENT -->
-
     <div class="content">
 
         <h1>
@@ -247,7 +239,6 @@
 
 
         <!-- TOTAL -->
-
         <div class="card">
 
             <div class="summary">
@@ -265,7 +256,6 @@
 
 
         <!-- TAMBAH TANKER -->
-
         <div class="card">
 
             <h3>
@@ -298,7 +288,6 @@
 
 
         <!-- DAFTAR TANKER -->
-
         <div class="card">
 
             <h3>
@@ -352,34 +341,27 @@
 ===================================================== */
 
 const namaFileMaster = "data tanker.xlsx";
-
 const STORAGE_KEY = "dataTanker";
 
 
 /* =====================================================
-   DATA AWAL
+   DATA
 ===================================================== */
 
-let dataTanker =
-    JSON.parse(
-        localStorage.getItem(STORAGE_KEY) || "[]"
-    );
+let dataTanker = [];
 
 
 /* =====================================================
    SAAT HALAMAN DIBUKA
 ===================================================== */
 
-window.addEventListener(
-    "DOMContentLoaded",
-    async function() {
+window.addEventListener("DOMContentLoaded", async function () {
 
-        await bacaExcelMaster();
+    await bacaExcelMaster();
 
-        tampilkanData();
+    tampilkanData();
 
-    }
-);
+});
 
 
 /* =====================================================
@@ -396,17 +378,15 @@ async function bacaExcelMaster() {
     try {
 
         /*
-        Baca file Excel terbaru.
-        Timestamp digunakan agar browser
-        tidak menggunakan cache lama.
+        Ambil file Excel terbaru.
         */
 
-        const response =
-            await fetch(
-                namaFileMaster +
-                "?v=" +
-                Date.now()
-            );
+        const response = await fetch(
+            namaFileMaster + "?v=" + Date.now(),
+            {
+                cache: "no-store"
+            }
+        );
 
 
         if (!response.ok) {
@@ -422,17 +402,18 @@ async function bacaExcelMaster() {
             await response.arrayBuffer();
 
 
+        /*
+        Buka Excel.
+        */
+
         const workbook =
-            XLSX.read(
-                arrayBuffer,
-                {
-                    type: "array"
-                }
-            );
+            XLSX.read(arrayBuffer, {
+                type: "array"
+            });
 
 
         /*
-        Cari sheet bernama "data".
+        Ambil sheet bernama "data".
         */
 
         let worksheet =
@@ -446,11 +427,10 @@ async function bacaExcelMaster() {
 
         if (!worksheet) {
 
-            const namaSheet =
-                workbook.SheetNames[0];
-
             worksheet =
-                workbook.Sheets[namaSheet];
+                workbook.Sheets[
+                    workbook.SheetNames[0]
+                ];
 
         }
 
@@ -465,79 +445,86 @@ async function bacaExcelMaster() {
 
 
         /*
-        Baca Excel sebagai array.
+        =================================================
+        CEK RANGE EXCEL
+        =================================================
 
         Contoh:
 
-        rows[0] = ["Nomor", "Tanker Number"]
-        rows[1] = [1, "AB86760E"]
-        rows[2] = [2, "AB8630E"]
-        dst.
+        A1 = Nomor
+        B1 = Tanker Number
+
+        A2 = 1
+        B2 = AB86760E
+
+        ...
+
+        A541 = 540
+        B541 = tanker terakhir
         */
 
-        const rows =
-            XLSX.utils.sheet_to_json(
-                worksheet,
-                {
-                    header: 1,
-                    defval: ""
-                }
+        const range =
+            XLSX.utils.decode_range(
+                worksheet["!ref"]
             );
 
 
         /*
-        Pastikan ada data.
-        */
-
-        if (rows.length < 2) {
-
-            throw new Error(
-                "Data tanker tidak ditemukan di Excel."
-            );
-
-        }
-
-
-        /*
         =================================================
-        MEMBACA TANKER NUMBER
+        BACA KOLOM B
         =================================================
 
-        Baris pertama = HEADER
-        Jadi mulai dari index 1.
+        rowIndex 0 = baris Excel 1 = HEADER
 
-        Kolom B = index 1.
-
-        541 baris Excel
-        - 1 baris header
-        = 540 Master Tanker
+        Jadi mulai dari rowIndex 1
+        = baris Excel 2.
         */
 
         const daftarTanker = [];
 
 
         for (
-            let i = 1;
-            i < rows.length;
-            i++
+            let rowIndex = 1;
+            rowIndex <= range.e.r;
+            rowIndex++
         ) {
 
-            const tanker =
-                String(
-                    rows[i][1] ?? ""
-                ).trim();
+            /*
+            Kolom B = nomor kolom 1
+            */
+
+            const alamatCell =
+                XLSX.utils.encode_cell({
+                    r: rowIndex,
+                    c: 1
+                });
+
+
+            const cell =
+                worksheet[alamatCell];
 
 
             /*
-            Hanya masukkan jika
-            kolom Tanker Number berisi.
+            Ambil nilai cell.
             */
 
-            if (tanker !== "") {
+            if (
+                cell &&
+                cell.v !== undefined &&
+                cell.v !== null
+            ) {
 
-                daftarTanker.push(
-                    tanker
-                );
+                const tanker =
+                    String(cell.v).trim();
+
+
+                if (tanker !== "") {
+
+                    daftarTanker.push(
+                        tanker
+                    );
+
+                }
 
             }
 
@@ -546,66 +533,69 @@ async function bacaExcelMaster() {
 
         /*
         =================================================
-        TIDAK MENGGUNAKAN SET
+        URUTKAN DATA
         =================================================
-
-        Sengaja tidak menggunakan:
-
-        [...new Set(...)]
-
-        supaya tidak ada data tanker
-        yang berkurang karena dianggap duplikat.
         */
+
+        daftarTanker.sort(function (a, b) {
+
+            return a.localeCompare(
+                b,
+                undefined,
+                {
+                    numeric: true,
+                    sensitivity: "base"
+                }
+            );
+
+        });
 
 
         /*
-        Urutkan Tanker Number.
-        */
-
-        daftarTanker.sort(
-            (a, b) =>
-                a.localeCompare(
-                    b,
-                    undefined,
-                    {
-                        numeric: true,
-                        sensitivity: "base"
-                    }
-                )
-        );
-
-
-        /*
-        Excel menjadi sumber utama
-        Master Tanker.
+        =================================================
+        SIMPAN
+        =================================================
         */
 
         dataTanker =
             daftarTanker;
 
 
-        /*
-        Simpan ke localStorage.
-        */
-
         localStorage.setItem(
             STORAGE_KEY,
-            JSON.stringify(
-                dataTanker
-            )
+            JSON.stringify(dataTanker)
         );
 
 
         /*
-        Tampilkan.
+        =================================================
+        TAMPILKAN
+        =================================================
         */
 
         tampilkanData();
 
 
         tampilkanPesan(
-            "Data Master Tanker berhasil diperbarui dari Excel.",
+            "Data Master Tanker berhasil diperbarui dari Excel. Total: " +
+            dataTanker.length +
+            " tanker.",
             "success"
+        );
+
+
+        /*
+        Informasi untuk pengecekan.
+        */
+
+        console.log(
+            "Jumlah seluruh baris Excel:",
+            range.e.r + 1
+        );
+
+        console.log(
+            "Jumlah Master Tanker:",
+            dataTanker.length
         );
 
 
@@ -616,15 +606,25 @@ async function bacaExcelMaster() {
 
         /*
         Kalau Excel gagal dibaca,
-        gunakan data yang tersimpan.
+        gunakan data terakhir.
         */
 
-        dataTanker =
-            JSON.parse(
-                localStorage.getItem(
-                    STORAGE_KEY
-                ) || "[]"
+        const dataLama =
+            localStorage.getItem(
+                STORAGE_KEY
             );
+
+
+        if (dataLama) {
+
+            dataTanker =
+                JSON.parse(dataLama);
+
+        } else {
+
+            dataTanker = [];
+
+        }
 
 
         tampilkanData();
@@ -632,8 +632,7 @@ async function bacaExcelMaster() {
 
         tampilkanPesan(
             "Excel gagal dibaca: " +
-            error.message +
-            ". Data lama tetap digunakan.",
+            error.message,
             "error"
         );
 
@@ -675,18 +674,17 @@ function tampilkanData() {
 
 
     const dataTampil =
-        dataTanker.filter(
-            tanker =>
-                tanker
-                    .toLowerCase()
-                    .includes(
-                        kataCari
-                    )
-        );
+        dataTanker.filter(function (tanker) {
+
+            return tanker
+                .toLowerCase()
+                .includes(kataCari);
+
+        });
 
 
     /*
-    Total seluruh Master Tanker.
+    Total Master Tanker.
     */
 
     total.textContent =
@@ -696,23 +694,17 @@ function tampilkanData() {
     table.innerHTML = "";
 
 
-    if (
-        dataTampil.length === 0
-    ) {
+    if (dataTampil.length === 0) {
 
         table.innerHTML = `
-
             <tr>
-
                 <td
                     colspan="3"
                     class="empty"
                 >
                     Tidak ada tanker yang ditemukan.
                 </td>
-
             </tr>
-
         `;
 
         return;
@@ -720,62 +712,54 @@ function tampilkanData() {
     }
 
 
-    dataTampil.forEach(
-        tanker => {
+    dataTampil.forEach(function (tanker) {
 
-            const index =
-                dataTanker.indexOf(
-                    tanker
-                );
+        const index =
+            dataTanker.indexOf(tanker);
 
 
-            const row =
-                document.createElement(
-                    "tr"
-                );
+        const row =
+            document.createElement("tr");
 
 
-            row.innerHTML = `
+        row.innerHTML = `
 
-                <td>
-                    ${index + 1}
-                </td>
+            <td>
+                ${index + 1}
+            </td>
 
-                <td>
-                    ${tanker}
-                </td>
+            <td>
+                ${tanker}
+            </td>
 
-                <td>
+            <td>
 
-                    <div class="action">
+                <div class="action">
 
-                        <button
-                            class="btn-edit"
-                            onclick="editTanker(${index})"
-                        >
-                            Edit
-                        </button>
+                    <button
+                        class="btn-edit"
+                        onclick="editTanker(${index})"
+                    >
+                        Edit
+                    </button>
 
-                        <button
-                            class="btn-delete"
-                            onclick="hapusTanker(${index})"
-                        >
-                            Hapus
-                        </button>
+                    <button
+                        class="btn-delete"
+                        onclick="hapusTanker(${index})"
+                    >
+                        Hapus
+                    </button>
 
-                    </div>
+                </div>
 
-                </td>
+            </td>
 
-            `;
+        `;
 
 
-            table.appendChild(
-                row
-            );
+        table.appendChild(row);
 
-        }
-    );
+    });
 
 }
 
@@ -796,9 +780,7 @@ function tambahTanker() {
         input.value.trim();
 
 
-    if (
-        nomor === ""
-    ) {
+    if (nomor === "") {
 
         tampilkanPesan(
             "Nomor tanker belum diisi.",
@@ -811,16 +793,15 @@ function tambahTanker() {
 
 
     const sudahAda =
-        dataTanker.some(
-            tanker =>
-                tanker.toLowerCase() ===
-                nomor.toLowerCase()
-        );
+        dataTanker.some(function (tanker) {
+
+            return tanker.toLowerCase() ===
+                nomor.toLowerCase();
+
+        });
 
 
-    if (
-        sudahAda
-    ) {
+    if (sudahAda) {
 
         tampilkanPesan(
             "Nomor tanker tersebut sudah ada.",
@@ -832,29 +813,26 @@ function tambahTanker() {
     }
 
 
-    dataTanker.push(
-        nomor
-    );
+    dataTanker.push(nomor);
 
 
-    dataTanker.sort(
-        (a, b) =>
-            a.localeCompare(
-                b,
-                undefined,
-                {
-                    numeric: true,
-                    sensitivity: "base"
-                }
-            )
-    );
+    dataTanker.sort(function (a, b) {
+
+        return a.localeCompare(
+            b,
+            undefined,
+            {
+                numeric: true,
+                sensitivity: "base"
+            }
+        );
+
+    });
 
 
     localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify(
-            dataTanker
-        )
+        JSON.stringify(dataTanker)
     );
 
 
@@ -889,9 +867,7 @@ function editTanker(index) {
         );
 
 
-    if (
-        nomorBaru === null
-    ) {
+    if (nomorBaru === null) {
 
         return;
 
@@ -902,9 +878,7 @@ function editTanker(index) {
         nomorBaru.trim();
 
 
-    if (
-        nomor === ""
-    ) {
+    if (nomor === "") {
 
         alert(
             "Nomor tanker tidak boleh kosong."
@@ -916,17 +890,18 @@ function editTanker(index) {
 
 
     const duplikat =
-        dataTanker.some(
-            (tanker, i) =>
+        dataTanker.some(function (tanker, i) {
+
+            return (
                 i !== index &&
                 tanker.toLowerCase() ===
                 nomor.toLowerCase()
-        );
+            );
+
+        });
 
 
-    if (
-        duplikat
-    ) {
+    if (duplikat) {
 
         alert(
             "Nomor tanker tersebut sudah ada."
@@ -941,24 +916,23 @@ function editTanker(index) {
         nomor;
 
 
-    dataTanker.sort(
-        (a, b) =>
-            a.localeCompare(
-                b,
-                undefined,
-                {
-                    numeric: true,
-                    sensitivity: "base"
-                }
-            )
-    );
+    dataTanker.sort(function (a, b) {
+
+        return a.localeCompare(
+            b,
+            undefined,
+            {
+                numeric: true,
+                sensitivity: "base"
+            }
+        );
+
+    });
 
 
     localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify(
-            dataTanker
-        )
+        JSON.stringify(dataTanker)
     );
 
 
@@ -1006,9 +980,7 @@ function hapusTanker(index) {
 
     localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify(
-            dataTanker
-        )
+        JSON.stringify(dataTanker)
     );
 
 
@@ -1051,5 +1023,4 @@ function tampilkanPesan(
 </script>
 
 </body>
-
 </html>
