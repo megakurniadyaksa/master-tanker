@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hasil Monitoring - Master Tanker</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    .header {
+      background: #ffffff;
+      padding: 18px 25px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .back-btn {
+      background: #555;
+      color: white;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 25px;
+    }
+
+    .toolbar {
+      background: white;
+      padding: 18px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar label {
+      font-weight: bold;
+    }
+
+    select {
+      padding: 9px 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .download-btn {
+      background: #198754;
+      color: white;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .download-btn:hover {
+      background: #157347;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 8px;
+      overflow: auto;
+      max-height: 70vh;
+      border: 1px solid #ddd;
+    }
+
+    table {
+      border-collapse: collapse;
+      min-width: 900px;
+      width: max-content;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 7px 10px;
+      text-align: center;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #e9ecef;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    th:first-child,
+    td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 3;
+      background: #f8f9fa;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      position: sticky;
+      left: 50px;
+      z-index: 3;
+      background: #f8f9fa;
+    }
+
+    th:first-child,
+    th:nth-child(2) {
+      background: #e9ecef;
+    }
+
+    .v {
+      font-weight: bold;
+    }
+
+    .info {
+      margin-bottom: 15px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .empty {
+      padding: 30px;
+      text-align: center;
+      color: #777;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h2>Hasil Monitoring</h2>
+    <button class="back-btn" onclick="kembali()">← Kembali</button>
+  </div>
+
+  <div class="container">
+
+    <div class="toolbar">
+
+      <label for="bulan">Bulan:</label>
+
+      <select id="bulan" onchange="tampilkanHasil()">
+      </select>
+
+      <button class="download-btn" onclick="downloadExcel()">
+        Download Excel
+      </button>
+
+    </div>
+
+    <div class="info" id="info"></div>
+
+    <div class="table-container">
+      <table id="tabelHasil">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+  </div>
+
+
+<script>
+
+  // ==============================
+  // AMBIL DATA DARI LOCAL STORAGE
+  // ==============================
+
+  let dataTanker = JSON.parse(
+    localStorage.getItem("dataTanker") || "[]"
+  );
+
+  let dataRit = JSON.parse(
+    localStorage.getItem("dataRit") || "{}"
+  );
+
+
+  // ==============================
+  // FORMAT BULAN
+  // ==============================
+
+  function namaBulan(bulan) {
+
+    const nama = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember"
+    ];
+
+    return nama[bulan - 1];
+  }
+
+
+  // ==============================
+  // DAPATKAN DAFTAR BULAN
+  // ==============================
+
+  function ambilDaftarBulan() {
+
+    const bulanSet = new Set();
+
+    Object.keys(dataRit).forEach(tanggal => {
+
+      if (!tanggal) return;
+
+      const bagian = tanggal.split("-");
+
+      if (bagian.length >= 2) {
+
+        const tahun = bagian[0];
+        const bulan = bagian[1];
+
+        bulanSet.add(`${tahun}-${bulan}`);
+      }
+
+    });
+
+    return Array.from(bulanSet).sort();
+  }
+
+
+  // ==============================
+  // BUAT DROPDOWN BULAN
+  // ==============================
+
+  function buatDropdownBulan() {
+
+    const select = document.getElementById("bulan");
+
+    select.innerHTML = "";
+
+    const daftarBulan = ambilDaftarBulan();
+
+    if (daftarBulan.length === 0) {
+
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "Belum ada data";
+      select.appendChild(option);
+
+      return;
+    }
+
+
+    daftarBulan.forEach(bulan => {
+
+      const bagian = bulan.split("-");
+
+      const tahun = bagian[0];
+      const nomorBulan = parseInt(bagian[1]);
+
+      const option = document.createElement("option");
+
+      option.value = bulan;
+
+      option.textContent =
+        namaBulan(nomorBulan) + " " + tahun;
+
+      select.appendChild(option);
+
+    });
+
+
+    // pilih bulan terbaru
+    select.value = daftarBulan[daftarBulan.length - 1];
+
+  }
+
+
+  // ==============================
+  // TAMPILKAN HASIL
+  // ==============================
+
+  function tampilkanHasil() {
+
+    const bulanDipilih =
+      document.getElementById("bulan").value;
+
+    const thead =
+      document.querySelector("#tabelHasil thead");
+
+    const tbody =
+      document.querySelector("#tabelHasil tbody");
+
+    const info =
+      document.getElementById("info");
+
+
+    thead.innerHTML = "";
+    tbody.innerHTML = "";
+
+
+    if (!bulanDipilih) {
+
+      info.textContent = "Belum ada data monitoring.";
+
+      return;
+    }
+
+
+    const bagian =
+      bulanDipilih.split("-");
+
+    const tahun =
+      parseInt(bagian[0]);
+
+    const bulan =
+      parseInt(bagian[1]);
+
+
+    // jumlah hari dalam bulan
+    const jumlahHari =
+      new Date(tahun, bulan, 0).getDate();
+
+
+    info.textContent =
+      "Monitoring " +
+      namaBulan(bulan) +
+      " " +
+      tahun +
+      " | Total Master Tanker: " +
+      dataTanker.length;
+
+
+    // ==========================
+    // HEADER TABEL
+    // ==========================
+
+    const headerRow =
+      document.createElement("tr");
+
+
+    const thNo =
+      document.createElement("th");
+
+    thNo.textContent = "No";
+
+    headerRow.appendChild(thNo);
+
+
+    const thTanker =
+      document.createElement("th");
+
+    thTanker.textContent = "Master Tanker";
+
+    headerRow.appendChild(thTanker);
+
+
+    for (let hari = 1; hari <= jumlahHari; hari++) {
+
+      const th =
+        document.createElement("th");
+
+      th.textContent = hari;
+
+      headerRow.appendChild(th);
+
+    }
+
+
+    thead.appendChild(headerRow);
+
+
+    // ==========================
+    // ISI DATA TANKER
+    // ==========================
+
+    dataTanker.forEach((tanker, index) => {
+
+      const row =
+        document.createElement("tr");
+
+
+      // nomor
+      const tdNo =
+        document.createElement("td");
+
+      tdNo.textContent = index + 1;
+
+      row.appendChild(tdNo);
+
+
+      // tanker number
+      const tdTanker =
+        document.createElement("td");
+
+      tdTanker.textContent = tanker;
+
+      row.appendChild(tdTanker);
+
+
+      // tanggal 1 sampai akhir bulan
+      for (
+        let hari = 1;
+        hari <= jumlahHari;
+        hari++
+      ) {
+
+        const td =
+          document.createElement("td");
+
+
+        const tanggal =
+          tahun +
+          "-" +
+          String(bulan).padStart(2, "0") +
+          "-" +
+          String(hari).padStart(2, "0");
+
+
+        const tankerRit =
+          dataRit[tanggal] || [];
+
+
+        if (
+          tankerRit.includes(tanker)
+        ) {
+
+          td.textContent = "V";
+          td.classList.add("v");
+
+        } else {
+
+          td.textContent = "";
+
+        }
+
+
+        row.appendChild(td);
+
+      }
+
+
+      tbody.appendChild(row);
+
+    });
+
+  }
+
+
+  // ==============================
+  // DOWNLOAD EXCEL
+  // ==============================
+
+  function downloadExcel() {
+
+    const bulanDipilih =
+      document.getElementById("bulan").value;
+
+
+    if (!bulanDipilih) {
+
+      alert("Belum ada data untuk didownload.");
+
+      return;
+    }
+
+
+    const bagian =
+      bulanDipilih.split("-");
+
+    const tahun =
+      parseInt(bagian[0]);
+
+    const bulan =
+      parseInt(bagian[1]);
+
+
+    const jumlahHari =
+      new Date(tahun, bulan, 0).getDate();
+
+
+    const dataExcel = [];
+
+
+    // header
+    const header = [
+      "No",
+      "Master Tanker"
+    ];
+
+
+    for (
+      let hari = 1;
+      hari <= jumlahHari;
+      hari++
+    ) {
+
+      header.push(hari);
+
+    }
+
+
+    dataExcel.push(header);
+
+
+    // isi
+    dataTanker.forEach((tanker, index) => {
+
+      const baris = [
+        index + 1,
+        tanker
+      ];
+
+
+      for (
+        let hari = 1;
+        hari <= jumlahHari;
+        hari++
+      ) {
+
+        const tanggal =
+          tahun +
+          "-" +
+          String(bulan).padStart(2, "0") +
+          "-" +
+          String(hari).padStart(2, "0");
+
+
+        const tankerRit =
+          dataRit[tanggal] || [];
+
+
+        if (
+          tankerRit.includes(tanker)
+        ) {
+
+          baris.push("V");
+
+        } else {
+
+          baris.push("");
+
+        }
+
+      }
+
+
+      dataExcel.push(baris);
+
+    });
+
+
+    // buat workbook
+    const worksheet =
+      XLSX.utils.aoa_to_sheet(dataExcel);
+
+
+    const workbook =
+      XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      namaBulan(bulan).substring(0, 20)
+    );
+
+
+    XLSX.writeFile(
+      workbook,
+      `Monitoring_${namaBulan(bulan)}_${tahun}.xlsx`
+    );
+
+  }
+
+
+  // ==============================
+  // KEMBALI KE DASHBOARD
+  // ==============================
+
+  function kembali() {
+
+    window.location.href = "index.html";
+
+  }
+
+
+  // ==============================
+  // JALANKAN SAAT HALAMAN DIBUKA
+  // ==============================
+
+  buatDropdownBulan();
+
+  tampilkanHasil();
+
+</script>
+
+</body>
+</html>

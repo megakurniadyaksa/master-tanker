@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Data Tanker - Master Tanker</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+
+            width: 230px;
+            height: 100vh;
+
+            background: white;
+            border-right: 1px solid #e5e7eb;
+
+            padding: 25px 15px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+
+            margin-bottom: 35px;
+            padding-left: 10px;
+        }
+
+        .menu a {
+            display: block;
+
+            text-decoration: none;
+            color: #555;
+
+            padding: 13px 15px;
+            margin-bottom: 6px;
+
+            border-radius: 8px;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: #eef2ff;
+            color: #3157d5;
+            font-weight: bold;
+        }
+
+
+        /* CONTENT */
+
+        .content {
+            margin-left: 230px;
+            padding: 35px;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+
+        /* CARD */
+
+        .card {
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 22px;
+
+            margin-bottom: 20px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+
+        /* TOTAL */
+
+        .summary {
+            color: #666;
+            font-size: 15px;
+        }
+
+        .total {
+            font-size: 32px;
+            font-weight: bold;
+
+            color: #3157d5;
+
+            margin-top: 8px;
+        }
+
+
+        /* FORM */
+
+        .form-row {
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 15px;
+        }
+
+        input {
+            flex: 1;
+
+            padding: 12px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+
+            border-color: #3157d5;
+        }
+
+        button {
+            border: none;
+
+            border-radius: 7px;
+
+            padding: 11px 18px;
+
+            cursor: pointer;
+
+            font-size: 14px;
+        }
+
+        .btn-add {
+            background: #3157d5;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background: #2647b5;
+        }
+
+        .btn-edit {
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+
+        /* SEARCH */
+
+        .search-box {
+            margin-top: 15px;
+
+            width: 100%;
+
+            padding: 12px 14px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+        }
+
+
+        /* TABLE */
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            padding: 13px;
+
+            border-bottom: 1px solid #eee;
+
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
+        .action {
+            display: flex;
+
+            gap: 7px;
+        }
+
+
+        /* PESAN */
+
+        .message {
+            margin-top: 12px;
+
+            font-size: 14px;
+        }
+
+        .success {
+            color: #15803d;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        .loading {
+            color: #3157d5;
+        }
+
+        .empty {
+            text-align: center;
+
+            padding: 30px;
+
+            color: #888;
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <div class="logo">
+            MASTER TANKER
+        </div>
+
+
+        <div class="menu">
+
+            <a href="index.html">
+                Dashboard
+            </a>
+
+
+            <a
+                href="tanker.html"
+                class="active"
+            >
+                Data Tanker
+            </a>
+
+
+            <a href="download.html">
+                Download Report
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- CONTENT -->
+
+    <div class="content">
+
+
+        <h1>
+            Data Tanker
+        </h1>
+
+
+
+        <!-- TOTAL -->
+
+        <div class="card">
+
+            <div class="summary">
+                Total Master Tanker
+            </div>
+
+
+            <div
+                class="total"
+                id="totalTanker"
+            >
+                0
+            </div>
+
+        </div>
+
+
+
+        <!-- TAMBAH TANKER -->
+
+        <div class="card">
+
+            <h3>
+                Tambah Master Tanker
+            </h3>
+
+
+            <div class="form-row">
+
+                <input
+                    type="text"
+                    id="inputTanker"
+                    placeholder="Masukkan nomor tanker"
+                >
+
+
+                <button
+                    class="btn-add"
+                    onclick="tambahTanker()"
+                >
+                    + Tambah
+                </button>
+
+            </div>
+
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
+        </div>
+
+
+
+        <!-- DAFTAR TANKER -->
+
+        <div class="card">
+
+            <h3>
+                Daftar Master Tanker
+            </h3>
+
+
+            <!-- SEARCH -->
+
+            <input
+                type="text"
+                id="searchTanker"
+                class="search-box"
+                placeholder="🔎 Cari Tanker Number..."
+                oninput="tampilkanData()"
+            >
+
+
+            <!-- TABLE -->
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th style="width:80px;">
+                            No
+                        </th>
+
+
+                        <th>
+                            Tanker Number
+                        </th>
+
+
+                        <th style="width:180px;">
+                            Aksi
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="tankerTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+
+<script>
+
+
+/* =========================================================
+   KONFIGURASI
+========================================================= */
+
+const namaFileMaster =
+    "data tanker.xlsx";
+
+
+const STORAGE_KEY =
+    "dataTanker";
+
+
+/*
+Versi data.
+
+Kita naikkan ke v2 supaya data Excel
+dibaca ulang setelah kode direvisi.
+*/
+
+const VERSION_KEY =
+    "dataTankerVersion";
+
+
+const CURRENT_VERSION =
+    "v2";
+
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
+let dataTanker =
+    JSON.parse(
+        localStorage.getItem(STORAGE_KEY)
+    ) || [];
+
+
+
+/* =========================================================
+   SAAT HALAMAN DIBUKA
+========================================================= */
+
+tampilkanData();
+
+bacaExcelMaster();
+
+
+
+/* =========================================================
+   BACA EXCEL
+========================================================= */
+
+async function bacaExcelMaster() {
+
+
+    const versiSekarang =
+        localStorage.getItem(
+            VERSION_KEY
+        );
+
+
+    /*
+    Kalau Excel versi terbaru sudah pernah
+    dimasukkan, jangan baca ulang.
+
+    Ini supaya tanker yang ditambahkan
+    secara manual tidak hilang.
+    */
+
+    if (
+        versiSekarang === CURRENT_VERSION &&
+        dataTanker.length > 0
+    ) {
+
+        return;
+
+    }
+
+
+    tampilkanPesan(
+        "Sedang membaca data dari Excel...",
+        "loading"
+    );
+
+
+    try {
+
+
+        /*
+        Ambil file Excel
+        */
+
+        const response =
+            await fetch(
+                namaFileMaster
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "File data tanker.xlsx tidak ditemukan."
+            );
+
+        }
+
+
+        /*
+        Baca file
+        */
+
+        const arrayBuffer =
+            await response.arrayBuffer();
+
+
+        const workbook =
+            XLSX.read(
+                arrayBuffer,
+                {
+                    type: "array"
+                }
+            );
+
+
+        /*
+        Sheet pertama
+        */
+
+        const namaSheet =
+            workbook.SheetNames[0];
+
+
+        const worksheet =
+            workbook.Sheets[namaSheet];
+
+
+        /*
+        Baca Excel sebagai array.
+
+        Contoh:
+
+        Baris 1:
+        No | Tanker Number
+
+        Baris 2:
+        1  | MT001
+
+        Baris 3:
+        2  | MT002
+        */
+
+        const rows =
+            XLSX.utils.sheet_to_json(
+                worksheet,
+                {
+                    header: 1,
+                    defval: ""
+                }
+            );
+
+
+        /*
+        Pastikan ada data
+        */
+
+        if (rows.length < 2) {
+
+            throw new Error(
+                "Data tanker tidak ditemukan."
+            );
+
+        }
+
+
+        /*
+        Ambil kolom kedua
+        */
+
+        let daftarTanker =
+            rows
+                .slice(1)
+                .map(row => {
+
+                    return String(
+                        row[1]
+                    ).trim();
+
+                });
+
+
+        /*
+        Buang baris yang benar-benar kosong
+        */
+
+        daftarTanker =
+            daftarTanker.filter(
+                nomor => nomor !== ""
+            );
+
+
+        /*
+        =====================================================
+        PENTING
+        =====================================================
+
+        Kita TIDAK menggunakan Set di sini.
+
+        Jadi data dari Excel tidak akan
+        otomatis dikurangi karena duplikat.
+
+        =====================================================
+        */
+
+
+        dataTanker =
+            daftarTanker;
+
+
+        /*
+        Urutkan A-Z
+        */
+
+        dataTanker.sort(
+            (a, b) =>
+                a.localeCompare(
+                    b,
+                    undefined,
+                    {
+                        numeric: true,
+                        sensitivity: "base"
+                    }
+                )
+        );
+
+
+        /*
+        Simpan
+        */
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(dataTanker)
+        );
+
+
+        localStorage.setItem(
+            VERSION_KEY,
+            CURRENT_VERSION
+        );
+
+
+        /*
+        Tampilkan
+        */
+
+        tampilkanData();
+
+
+        tampilkanPesan(
+            "Data Master Tanker berhasil dimasukkan dari Excel.",
+            "success"
+        );
+
+
+    } catch (error) {
+
+
+        console.error(error);
+
+
+        tampilkanPesan(
+            "Gagal membaca Excel: " +
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   TAMPILKAN DATA
+========================================================= */
+
+function tampilkanData() {
+
+
+    const table =
+        document.getElementById(
+            "tankerTable"
+        );
+
+
+    const total =
+        document.getElementById(
+            "totalTanker"
+        );
+
+
+    const search =
+        document.getElementById(
+            "searchTanker"
+        );
+
+
+    /*
+    Ambil kata pencarian
+    */
+
+    const kataCari =
+        search
+            ? search.value
+                .trim()
+                .toLowerCase()
+            : "";
+
+
+    /*
+    Filter data
+    */
+
+    const dataTampil =
+        dataTanker.filter(
+            tanker =>
+                tanker
+                    .toLowerCase()
+                    .includes(kataCari)
+        );
+
+
+    /*
+    Total tetap menunjukkan
+    jumlah seluruh Master Tanker,
+    bukan jumlah hasil pencarian.
+    */
+
+    total.textContent =
+        dataTanker.length;
+
+
+    /*
+    Kosongkan tabel
+    */
+
+    table.innerHTML = "";
+
+
+    /*
+    Tidak ada hasil
+    */
+
+    if (dataTampil.length === 0) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="3"
+                    class="empty"
+                >
+
+                    Tidak ada tanker yang ditemukan.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    /*
+    Tampilkan hasil
+    */
+
+    dataTampil.forEach(
+        tanker => {
+
+
+            /*
+            Cari posisi asli tanker
+            */
+
+            const index =
+                dataTanker.indexOf(
+                    tanker
+                );
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+
+                <td>
+                    ${tanker}
+                </td>
+
+
+                <td>
+
+                    <div class="action">
+
+                        <button
+                            class="btn-edit"
+                            onclick="editTanker(${index})"
+                        >
+                            Edit
+                        </button>
+
+
+                        <button
+                            class="btn-delete"
+                            onclick="hapusTanker(${index})"
+                        >
+                            Hapus
+                        </button>
+
+                    </div>
+
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        }
+    );
+
+}
+
+
+
+/* =========================================================
+   TAMBAH TANKER
+========================================================= */
+
+function tambahTanker() {
+
+
+    const input =
+        document.getElementById(
+            "inputTanker"
+        );
+
+
+    const nomor =
+        input.value.trim();
+
+
+    /*
+    Tidak boleh kosong
+    */
+
+    if (nomor === "") {
+
+        tampilkanPesan(
+            "Nomor tanker belum diisi.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /*
+    Cek apakah sudah ada
+    */
+
+    const sudahAda =
+        dataTanker.some(
+            tanker =>
+                tanker.toLowerCase()
+                === nomor.toLowerCase()
+        );
+
+
+    if (sudahAda) {
+
+        tampilkanPesan(
+            "Nomor tanker tersebut sudah ada.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /*
+    Tambahkan
+    */
+
+    dataTanker.push(
+        nomor
+    );
+
+
+    /*
+    Urutkan otomatis A-Z
+    */
+
+    dataTanker.sort(
+        (a, b) =>
+            a.localeCompare(
+                b,
+                undefined,
+                {
+                    numeric: true,
+                    sensitivity: "base"
+                }
+            )
+    );
+
+
+    /*
+    Simpan
+    */
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(dataTanker)
+    );
+
+
+    input.value = "";
+
+
+    /*
+    Tampilkan
+    */
+
+    tampilkanData();
+
+
+    tampilkanPesan(
+        "Master tanker berhasil ditambahkan dan diurutkan.",
+        "success"
+    );
+
+}
+
+
+
+/* =========================================================
+   EDIT
+========================================================= */
+
+function editTanker(index) {
+
+
+    const nomorLama =
+        dataTanker[index];
+
+
+    const nomorBaru =
+        prompt(
+            "Edit nomor tanker:",
+            nomorLama
+        );
+
+
+    if (nomorBaru === null) {
+
+        return;
+
+    }
+
+
+    const nomor =
+        nomorBaru.trim();
+
+
+    if (nomor === "") {
+
+        alert(
+            "Nomor tanker tidak boleh kosong."
+        );
+
+        return;
+
+    }
+
+
+    /*
+    Cek duplikat
+    */
+
+    const duplikat =
+        dataTanker.some(
+            (tanker, i) =>
+
+                i !== index &&
+
+                tanker.toLowerCase()
+                === nomor.toLowerCase()
+        );
+
+
+    if (duplikat) {
+
+        alert(
+            "Nomor tanker tersebut sudah ada."
+        );
+
+        return;
+
+    }
+
+
+    dataTanker[index] =
+        nomor;
+
+
+    /*
+    Setelah edit,
+    urutkan lagi A-Z
+    */
+
+    dataTanker.sort(
+        (a, b) =>
+            a.localeCompare(
+                b,
+                undefined,
+                {
+                    numeric: true,
+                    sensitivity: "base"
+                }
+            )
+    );
+
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(dataTanker)
+    );
+
+
+    tampilkanData();
+
+}
+
+
+
+/* =========================================================
+   HAPUS
+========================================================= */
+
+function hapusTanker(index) {
+
+
+    const nomor =
+        dataTanker[index];
+
+
+    const yakin =
+        confirm(
+            "Yakin ingin menghapus tanker " +
+            nomor +
+            "?"
+        );
+
+
+    if (!yakin) {
+
+        return;
+
+    }
+
+
+    dataTanker.splice(
+        index,
+        1
+    );
+
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(dataTanker)
+    );
+
+
+    tampilkanData();
+
+
+    tampilkanPesan(
+        "Master tanker berhasil dihapus.",
+        "success"
+    );
+
+}
+
+
+
+/* =========================================================
+   PESAN
+========================================================= */
+
+function tampilkanPesan(
+    pesan,
+    tipe
+) {
+
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.textContent =
+        pesan;
+
+
+    message.className =
+        "message " + tipe;
+
+}
+
+</script>
+
+</body>
+</html>

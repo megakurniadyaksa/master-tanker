@@ -1,0 +1,2432 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - Master Tanker</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 230px;
+            height: 100vh;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 25px 15px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 35px;
+            padding-left: 10px;
+        }
+
+        .menu a {
+            display: block;
+            text-decoration: none;
+            color: #555;
+            padding: 13px 15px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: #eef2ff;
+            color: #3157d5;
+            font-weight: bold;
+        }
+
+        .content {
+            margin-left: 230px;
+            padding: 35px;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .upload-row {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            margin-top: 15px;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 7px;
+            color: #555;
+        }
+
+        input[type="file"],
+        input[type="date"] {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            background: white;
+            font-size: 14px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #3157d5;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            padding: 12px 20px;
+            font-size: 14px;
+        }
+
+        .btn-primary:hover {
+            background: #2647b5;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            border-radius: 7px;
+            padding: 8px 12px;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 7px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .monitoring-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .monitor-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .monitor-title {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .monitor-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #3157d5;
+        }
+
+        .tanggal-monitoring {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            padding: 13px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
+        .checkbox-blokir {
+            width: 18px;
+            height: 18px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+        }
+
+        .hasil-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hasil-text h3 {
+            margin: 0 0 7px 0;
+        }
+
+        .hasil-text p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .history-table {
+            font-size: 14px;
+        }
+
+        @media (max-width: 900px) {
+            .monitoring-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .upload-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+    <div class="logo">
+        MASTER TANKER
+    </div>
+
+    <div class="menu">
+
+        <a href="index.html" class="active">
+            Dashboard
+        </a>
+
+        <a href="tanker.html">
+            Data Tanker
+        </a>
+
+        <a href="download.html">
+            Download Report
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- CONTENT -->
+
+<div class="content">
+
+    <h1>
+        Dashboard
+    </h1>
+
+
+    <!-- ==========================================
+         UPLOAD LO CLOSING
+    =========================================== -->
+
+    <div class="card">
+
+        <h2>
+            Upload LO Closing
+        </h2>
+
+        <div class="upload-row">
+
+            <div class="input-group">
+
+                <label>
+                    File LO Closing
+                </label>
+
+                <input
+                    type="file"
+                    id="fileLO"
+                    accept=".xls,.xlsx"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    Tanggal LO
+                </label>
+
+                <input
+                    type="date"
+                    id="tanggalUpload"
+                >
+
+            </div>
+
+
+            <div>
+
+                <button
+                    class="btn-primary"
+                    onclick="prosesUpload()"
+                >
+                    Upload / Proses
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="uploadMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+
+    <!-- ==========================================
+         RIWAYAT UPLOAD
+    =========================================== -->
+
+    <div class="card">
+
+        <h2>
+            Riwayat Upload
+        </h2>
+
+        <table class="history-table">
+
+            <thead>
+
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Nama File</th>
+                    <th>Jumlah Tanker Rit</th>
+                    <th>Aksi</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="uploadHistory">
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- ==========================================
+         DASHBOARD MONITORING
+    =========================================== -->
+
+    <div class="card">
+
+        <h2>
+            Dashboard Monitoring
+        </h2>
+
+
+        <div class="upload-row">
+
+            <div class="input-group">
+
+                <label>
+                    Tanggal Monitoring
+                </label>
+
+                <input
+                    type="date"
+                    id="tanggalMonitoringInput"
+                    onchange="tampilkanDashboard()"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="tanggal-monitoring"
+            id="tanggalMonitoringText"
+            style="margin-top:15px;"
+        >
+        </div>
+
+
+        <div class="monitoring-grid">
+
+
+            <div class="monitor-card">
+
+                <div class="monitor-title">
+                    Total Master Tanker
+                </div>
+
+                <div
+                    class="monitor-value"
+                    id="totalMaster"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="monitor-card">
+
+                <div class="monitor-title">
+                    Tanker Rit
+                </div>
+
+                <div
+                    class="monitor-value"
+                    id="totalRit"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="monitor-card">
+
+                <div class="monitor-title">
+                    Tanker Tidak Rit ≥ 7 Hari
+                </div>
+
+                <div
+                    class="monitor-value"
+                    id="totalTidakRit"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="monitor-card">
+
+                <div class="monitor-title">
+                    Data Terakhir
+                </div>
+
+                <div
+                    class="monitor-value"
+                    id="dataTerakhir"
+                    style="font-size:20px;"
+                >
+                    -
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         TANKER TIDAK RIT
+    =========================================== -->
+
+    <div class="card">
+
+        <h2>
+            Tanker Tidak Rit ≥ 7 Hari
+        </h2>
+
+        <p style="color:#666;font-size:14px;">
+
+            Tanker yang terakhir rit 7 hari atau
+            lebih sebelum tanggal monitoring.
+
+        </p>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        No
+                    </th>
+
+                    <th>
+                        Master Tanker
+                    </th>
+
+                    <th>
+                        Tidak Rit
+                    </th>
+
+                    <th>
+                        Blokir
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="blokirTable">
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- ==========================================
+         HASIL
+    =========================================== -->
+
+    <div class="card">
+
+        <div class="hasil-box">
+
+            <div class="hasil-text">
+
+                <h3>
+                    Hasil Master Tanker
+                </h3>
+
+                <p>
+                    Lihat hasil monitoring dalam
+                    bentuk spreadsheet.
+                </p>
+
+            </div>
+
+
+            <button
+                class="btn-primary"
+                onclick="lihatHasil()"
+            >
+                Lihat Hasil →
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   NAMA FILE MASTER
+===================================================== */
+
+const namaFileMaster = "data tanker.xlsx";
+
+
+/* =====================================================
+   LOCAL STORAGE
+===================================================== */
+
+let dataTanker =
+    JSON.parse(
+        localStorage.getItem("dataTanker")
+    ) || [];
+
+
+let dataRit =
+    JSON.parse(
+        localStorage.getItem("dataRit")
+    ) || {};
+
+
+let dataBlokir =
+    JSON.parse(
+        localStorage.getItem("dataBlokir")
+    ) || {};
+
+
+let uploadRecords =
+    JSON.parse(
+        localStorage.getItem("uploadRecords")
+    ) || [];
+
+
+/*
+Data awal dari Excel sudah pernah dibaca
+atau belum
+*/
+
+let dataExcelSudahDibaca =
+    localStorage.getItem(
+        "excelRitSudahDibaca"
+    ) === "true";
+
+
+/* =====================================================
+   SAAT HALAMAN DIBUKA
+===================================================== */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        await bacaExcelAwal();
+
+        tampilkanDashboard();
+
+        tampilkanRiwayatUpload();
+
+    }
+);
+
+
+/* =====================================================
+   BACA EXCEL AWAL
+===================================================== */
+
+async function bacaExcelAwal() {
+
+    /*
+    Kalau sudah pernah dibaca,
+    jangan baca ulang supaya data
+    yang sudah ada tidak berubah.
+    */
+
+    if (dataExcelSudahDibaca) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                namaFileMaster
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "File data tanker.xlsx tidak ditemukan."
+            );
+
+        }
+
+
+        const buffer =
+            await response.arrayBuffer();
+
+
+        const workbook =
+            XLSX.read(
+                buffer,
+                {
+                    type: "array"
+                }
+            );
+
+
+        /*
+        ==========================================
+        1. BACA MASTER TANKER
+        ==========================================
+        */
+
+        let masterExcel = [];
+
+
+        /*
+        Cari sheet bernama data
+        */
+
+        const sheetData =
+            workbook.Sheets["data"];
+
+
+        if (sheetData) {
+
+            const rowsData =
+                XLSX.utils.sheet_to_json(
+                    sheetData,
+                    {
+                        header: 1,
+                        defval: ""
+                    }
+                );
+
+
+            /*
+            Kolom B = Tanker Number
+            */
+
+            masterExcel =
+                rowsData
+                    .slice(1)
+                    .map(
+                        row =>
+                            String(
+                                row[1] || ""
+                            ).trim()
+                    )
+                    .filter(
+                        nomor =>
+                            nomor !== ""
+                    );
+
+        }
+
+
+        /*
+        ==========================================
+        2. KALAU SHEET DATA KOSONG
+        AMBIL DARI SHEET MONITORING
+        ==========================================
+        */
+
+        if (
+            masterExcel.length === 0
+        ) {
+
+            for (
+                const namaSheet
+                of workbook.SheetNames
+            ) {
+
+                if (
+                    namaSheet
+                        .toLowerCase()
+                        === "data"
+                ) {
+                    continue;
+                }
+
+
+                const ws =
+                    workbook.Sheets[
+                        namaSheet
+                    ];
+
+
+                const rows =
+                    XLSX.utils.sheet_to_json(
+                        ws,
+                        {
+                            header: 1,
+                            defval: ""
+                        }
+                    );
+
+
+                /*
+                Kolom B = Tanker Number
+                */
+
+                const kandidat =
+                    rows
+                        .slice(1)
+                        .map(
+                            row =>
+                                String(
+                                    row[1] || ""
+                                ).trim()
+                        )
+                        .filter(
+                            nomor =>
+                                nomor !== "" &&
+                                nomor !== "-"
+                        );
+
+
+                if (
+                    kandidat.length > 0
+                ) {
+
+                    masterExcel =
+                        kandidat;
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+
+        /*
+        Simpan Master Tanker
+        */
+
+        if (
+            masterExcel.length > 0
+        ) {
+
+            /*
+            Hapus duplikat untuk master.
+            */
+
+            const unik =
+                [...new Set(
+                    masterExcel
+                )];
+
+
+            unik.sort(
+                (a, b) =>
+                    a.localeCompare(
+                        b,
+                        undefined,
+                        {
+                            numeric: true,
+                            sensitivity: "base"
+                        }
+                    )
+            );
+
+
+            /*
+            Kalau localStorage belum ada,
+            isi dari Excel.
+
+            Kalau sudah ada,
+            jangan hapus data manual
+            yang dibuat di Data Tanker.
+            */
+
+            if (
+                dataTanker.length === 0
+            ) {
+
+                dataTanker =
+                    unik;
+
+                localStorage.setItem(
+                    "dataTanker",
+                    JSON.stringify(
+                        dataTanker
+                    )
+                );
+
+            }
+
+        }
+
+
+        /*
+        ==========================================
+        3. BACA RIWAYAT RIT
+        ==========================================
+        */
+
+        for (
+            const namaSheet
+            of workbook.SheetNames
+        ) {
+
+            /*
+            Sheet data bukan sheet rit.
+            */
+
+            if (
+                namaSheet
+                    .toLowerCase()
+                    === "data"
+            ) {
+
+                continue;
+
+            }
+
+
+            const tanggalSheet =
+                ambilBulanDanTahun(
+                    namaSheet
+                );
+
+
+            /*
+            Kalau nama sheet tidak bisa
+            dibaca sebagai bulan + tahun,
+            lewati.
+            */
+
+            if (!tanggalSheet) {
+
+                continue;
+
+            }
+
+
+            const ws =
+                workbook.Sheets[
+                    namaSheet
+                ];
+
+
+            const rows =
+                XLSX.utils.sheet_to_json(
+                    ws,
+                    {
+                        header: 1,
+                        defval: ""
+                    }
+                );
+
+
+            /*
+            Baris pertama adalah header:
+            A = Nomor
+            B = Tanker Number
+            C dst = tanggal
+            */
+
+            if (
+                rows.length < 2
+            ) {
+
+                continue;
+
+            }
+
+
+            const header =
+                rows[0];
+
+
+            /*
+            Mulai dari kolom C
+            */
+
+            for (
+                let col = 2;
+                col < header.length;
+                col++
+            ) {
+
+
+                const hari =
+                    parseInt(
+                        header[col]
+                    );
+
+
+                /*
+                Kalau header bukan angka,
+                lewati.
+                */
+
+                if (
+                    isNaN(hari)
+                ) {
+
+                    continue;
+
+                }
+
+
+                const tanggal =
+                    buatTanggal(
+                        tanggalSheet.tahun,
+                        tanggalSheet.bulan,
+                        hari
+                    );
+
+
+                /*
+                Pastikan tanggal valid
+                */
+
+                if (!tanggal) {
+
+                    continue;
+
+                }
+
+
+                /*
+                Pastikan array tanggal
+                tersedia
+                */
+
+                if (
+                    !dataRit[tanggal]
+                ) {
+
+                    dataRit[tanggal] =
+                        [];
+
+                }
+
+
+                /*
+                Baca setiap tanker
+                */
+
+                for (
+                    let row = 1;
+                    row < rows.length;
+                    row++
+                ) {
+
+
+                    const tanker =
+                        String(
+                            rows[row][1] ||
+                            ""
+                        ).trim();
+
+
+                    /*
+                    Tidak ada nomor tanker
+                    */
+
+                    if (
+                        !tanker
+                    ) {
+
+                        continue;
+
+                    }
+
+
+                    const nilai =
+                        String(
+                            rows[row][col] ||
+                            ""
+                        )
+                        .trim()
+                        .toUpperCase();
+
+
+                    /*
+                    Kalau ada V,
+                    berarti rit.
+                    */
+
+                    if (
+                        nilai === "V"
+                    ) {
+
+                        const sudahAda =
+                            dataRit[
+                                tanggal
+                            ].some(
+                                item =>
+                                    item
+                                        .toLowerCase()
+                                        === tanker
+                                            .toLowerCase()
+                            );
+
+
+                        if (
+                            !sudahAda
+                        ) {
+
+                            dataRit[
+                                tanggal
+                            ].push(
+                                tanker
+                            );
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+
+        /*
+        Simpan data rit
+        */
+
+        localStorage.setItem(
+            "dataRit",
+            JSON.stringify(
+                dataRit
+            )
+        );
+
+
+        /*
+        Tandai sudah dibaca
+        */
+
+        localStorage.setItem(
+            "excelRitSudahDibaca",
+            "true"
+        );
+
+
+        dataExcelSudahDibaca =
+            true;
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        tampilkanPesan(
+            "Excel belum berhasil dibaca. " +
+            "Pastikan index.html dan data tanker.xlsx " +
+            "dibuka melalui Live Server.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   BACA BULAN + TAHUN DARI NAMA SHEET
+===================================================== */
+
+function ambilBulanDanTahun(
+    namaSheet
+) {
+
+    const teks =
+        namaSheet
+            .toLowerCase()
+            .trim();
+
+
+    const bulanMap = {
+
+        januari: 1,
+        februari: 2,
+        maret: 3,
+        april: 4,
+        mei: 5,
+        juni: 6,
+        juli: 7,
+        agustus: 8,
+        september: 9,
+        oktober: 10,
+        november: 11,
+        desember: 12
+
+    };
+
+
+    for (
+        const namaBulan
+        in bulanMap
+    ) {
+
+        if (
+            teks.includes(
+                namaBulan
+            )
+        ) {
+
+            const tahunMatch =
+                teks.match(
+                    /20\d{2}/
+                );
+
+
+            if (
+                tahunMatch
+            ) {
+
+                return {
+
+                    bulan:
+                        bulanMap[
+                            namaBulan
+                        ],
+
+                    tahun:
+                        parseInt(
+                            tahunMatch[0]
+                        )
+
+                };
+
+            }
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =====================================================
+   BUAT TANGGAL
+===================================================== */
+
+function buatTanggal(
+    tahun,
+    bulan,
+    hari
+) {
+
+    const date =
+        new Date(
+            tahun,
+            bulan - 1,
+            hari
+        );
+
+
+    /*
+    Cek supaya tanggal valid.
+    */
+
+    if (
+        date.getFullYear() !== tahun ||
+        date.getMonth() !== bulan - 1 ||
+        date.getDate() !== hari
+    ) {
+
+        return null;
+
+    }
+
+
+    const y =
+        tahun.toString();
+
+
+    const m =
+        String(
+            bulan
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    const d =
+        String(
+            hari
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    return (
+        y +
+        "-" +
+        m +
+        "-" +
+        d
+    );
+
+}
+
+
+/* =====================================================
+   UPLOAD LO CLOSING
+===================================================== */
+
+async function prosesUpload() {
+
+    const fileInput =
+        document.getElementById(
+            "fileLO"
+        );
+
+
+    const tanggal =
+        document.getElementById(
+            "tanggalUpload"
+        ).value;
+
+
+    if (
+        !fileInput.files ||
+        fileInput.files.length === 0
+    ) {
+
+        tampilkanPesan(
+            "Silakan pilih file LO Closing.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!tanggal) {
+
+        tampilkanPesan(
+            "Silakan pilih tanggal LO.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        dataTanker.length === 0
+    ) {
+
+        tampilkanPesan(
+            "Master Tanker belum tersedia.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const file =
+        fileInput.files[0];
+
+
+    try {
+
+        const buffer =
+            await file.arrayBuffer();
+
+
+        const workbook =
+            XLSX.read(
+                buffer,
+                {
+                    type: "array"
+                }
+            );
+
+
+        const sheet =
+            workbook.Sheets[
+                workbook.SheetNames[0]
+            ];
+
+
+        const rows =
+            XLSX.utils.sheet_to_json(
+                sheet,
+                {
+                    header: 1,
+                    defval: ""
+                }
+            );
+
+
+        /*
+        Cari baris header
+        */
+
+        let headerRow = -1;
+        let indexTanker = -1;
+
+
+        for (
+            let r = 0;
+            r < Math.min(
+                rows.length,
+                10
+            );
+            r++
+        ) {
+
+            const header =
+                rows[r].map(
+                    item =>
+                        String(item)
+                            .trim()
+                            .toLowerCase()
+                );
+
+
+            const index =
+                header.findIndex(
+                    item =>
+                        item ===
+                        "tanker number"
+                );
+
+
+            if (
+                index !== -1
+            ) {
+
+                headerRow = r;
+                indexTanker = index;
+
+                break;
+
+            }
+
+        }
+
+
+        if (
+            headerRow === -1
+        ) {
+
+            throw new Error(
+                "Kolom Tanker Number tidak ditemukan."
+            );
+
+        }
+
+
+        /*
+        Ambil tanker dari LO
+        */
+
+        const tankerLO =
+            rows
+                .slice(
+                    headerRow + 1
+                )
+                .map(
+                    row =>
+                        String(
+                            row[indexTanker] ||
+                            ""
+                        ).trim()
+                )
+                .filter(
+                    tanker =>
+                        tanker !== ""
+                );
+
+
+        /*
+        Hilangkan duplikat
+        */
+
+        const tankerUnik =
+            [...new Set(
+                tankerLO
+            )];
+
+
+        /*
+        Buat daftar Master Tanker
+        untuk pencocokan
+        */
+
+        const masterMap =
+            new Map();
+
+
+        dataTanker.forEach(
+            tanker => {
+
+                masterMap.set(
+                    tanker
+                        .trim()
+                        .toLowerCase(),
+
+                    tanker
+                );
+
+            }
+        );
+
+
+        /*
+        Hanya tanker yang ada
+        di Master Tanker
+        */
+
+        const tankerMatch =
+            tankerUnik
+                .filter(
+                    tanker =>
+                        masterMap.has(
+                            tanker
+                                .trim()
+                                .toLowerCase()
+                        )
+                )
+                .map(
+                    tanker =>
+                        masterMap.get(
+                            tanker
+                                .trim()
+                                .toLowerCase()
+                        )
+                );
+
+
+        /*
+        Kalau tanggal belum ada
+        */
+
+        if (
+            !dataRit[tanggal]
+        ) {
+
+            dataRit[tanggal] =
+                [];
+
+        }
+
+
+        /*
+        Tambahkan rit
+        */
+
+        tankerMatch.forEach(
+            tanker => {
+
+                const sudahAda =
+                    dataRit[
+                        tanggal
+                    ].some(
+                        item =>
+                            item
+                                .toLowerCase()
+                                === tanker
+                                    .toLowerCase()
+                    );
+
+
+                if (
+                    !sudahAda
+                ) {
+
+                    dataRit[
+                        tanggal
+                    ].push(
+                        tanker
+                    );
+
+                }
+
+            }
+        );
+
+
+        /*
+        Simpan upload sebagai record
+        */
+
+        const record = {
+
+            id:
+                Date.now(),
+
+            tanggal:
+                tanggal,
+
+            namaFile:
+                file.name,
+
+            jumlah:
+                tankerMatch.length
+
+        };
+
+
+        uploadRecords.push(
+            record
+        );
+
+
+        localStorage.setItem(
+            "dataRit",
+            JSON.stringify(
+                dataRit
+            )
+        );
+
+
+        localStorage.setItem(
+            "uploadRecords",
+            JSON.stringify(
+                uploadRecords
+            )
+        );
+
+
+        /*
+        Pilih tanggal monitoring
+        */
+
+        document.getElementById(
+            "tanggalMonitoringInput"
+        ).value =
+            tanggal;
+
+
+        tampilkanDashboard();
+
+        tampilkanRiwayatUpload();
+
+
+        fileInput.value = "";
+
+
+        tampilkanPesan(
+            "Berhasil. " +
+            tankerMatch.length +
+            " tanker tercatat rit pada " +
+            formatTanggal(tanggal) +
+            ".",
+            "success"
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        tampilkanPesan(
+            "Gagal membaca file: " +
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   TAMPILKAN DASHBOARD
+===================================================== */
+
+function tampilkanDashboard() {
+
+    dataTanker =
+        JSON.parse(
+            localStorage.getItem(
+                "dataTanker"
+            )
+        ) || [];
+
+
+    dataRit =
+        JSON.parse(
+            localStorage.getItem(
+                "dataRit"
+            )
+        ) || {};
+
+
+    dataBlokir =
+        JSON.parse(
+            localStorage.getItem(
+                "dataBlokir"
+            )
+        ) || {};
+
+
+    /*
+    Kalau belum ada tanggal,
+    pakai tanggal terakhir
+    */
+
+    let tanggal =
+        document.getElementById(
+            "tanggalMonitoringInput"
+        ).value;
+
+
+    if (!tanggal) {
+
+        tanggal =
+            dapatkanTanggalTerbaru();
+
+    }
+
+
+    document.getElementById(
+        "totalMaster"
+    ).textContent =
+        dataTanker.length;
+
+
+    if (!tanggal) {
+
+        document.getElementById(
+            "totalRit"
+        ).textContent =
+            "0";
+
+
+        document.getElementById(
+            "totalTidakRit"
+        ).textContent =
+            "0";
+
+
+        document.getElementById(
+            "dataTerakhir"
+        ).textContent =
+            "-";
+
+
+        document.getElementById(
+            "tanggalMonitoringText"
+        ).textContent =
+            "Belum ada data monitoring.";
+
+
+        tampilkanListBlokir([]);
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "tanggalMonitoringInput"
+    ).value =
+        tanggal;
+
+
+    document.getElementById(
+        "tanggalMonitoringText"
+    ).textContent =
+        "Monitoring tanggal " +
+        formatTanggal(tanggal);
+
+
+    document.getElementById(
+        "dataTerakhir"
+    ).textContent =
+        formatTanggal(tanggal);
+
+
+    const ritHariIni =
+        dataRit[tanggal] || [];
+
+
+    document.getElementById(
+        "totalRit"
+    ).textContent =
+        ritHariIni.length;
+
+
+    const daftarTidakRit =
+        hitungTidakRit(
+            tanggal
+        );
+
+
+    document.getElementById(
+        "totalTidakRit"
+    ).textContent =
+        daftarTidakRit.length;
+
+
+    tampilkanListBlokir(
+        daftarTidakRit
+    );
+
+}
+
+
+/* =====================================================
+   HITUNG TIDAK RIT ≥ 7 HARI
+===================================================== */
+
+function hitungTidakRit(
+    tanggalMonitoring
+) {
+
+    const hasil = [];
+
+
+    dataTanker.forEach(
+        tanker => {
+
+            const ritTerakhir =
+                cariRitTerakhir(
+                    tanker,
+                    tanggalMonitoring
+                );
+
+
+            /*
+            Kalau belum pernah rit,
+            untuk sementara tidak dimasukkan.
+            */
+
+            if (
+                !ritTerakhir
+            ) {
+
+                return;
+
+            }
+
+
+            const hari =
+                selisihHari(
+                    ritTerakhir,
+                    tanggalMonitoring
+                );
+
+
+            if (
+                hari >= 7
+            ) {
+
+                hasil.push({
+
+                    tanker:
+                        tanker,
+
+                    hari:
+                        hari,
+
+                    ritTerakhir:
+                        ritTerakhir
+
+                });
+
+            }
+
+        }
+    );
+
+
+    return hasil;
+
+}
+
+
+/* =====================================================
+   CARI RIT TERAKHIR
+===================================================== */
+
+function cariRitTerakhir(
+    tanker,
+    tanggalSampai
+) {
+
+    const tanggalList =
+        Object.keys(
+            dataRit
+        )
+        .filter(
+            tanggal =>
+                tanggal <=
+                tanggalSampai
+        )
+        .sort()
+        .reverse();
+
+
+    for (
+        const tanggal
+        of tanggalList
+    ) {
+
+        const daftar =
+            dataRit[tanggal] || [];
+
+
+        const ditemukan =
+            daftar.some(
+                item =>
+                    item
+                        .trim()
+                        .toLowerCase()
+                        === tanker
+                            .trim()
+                            .toLowerCase()
+            );
+
+
+        if (
+            ditemukan
+        ) {
+
+            return tanggal;
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =====================================================
+   TAMPILKAN LIST TIDAK RIT
+===================================================== */
+
+function tampilkanListBlokir(
+    daftar
+) {
+
+    const table =
+        document.getElementById(
+            "blokirTable"
+        );
+
+
+    table.innerHTML = "";
+
+
+    if (
+        daftar.length === 0
+    ) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="4"
+                    class="empty"
+                >
+                    Tidak ada tanker yang
+                    tidak rit ≥ 7 hari.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    daftar.forEach(
+        (item, index) => {
+
+            const checked =
+                dataBlokir[
+                    item.tanker
+                ] === true;
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+                    ${item.tanker}
+                </td>
+
+                <td>
+                    ${item.hari} hari
+                </td>
+
+                <td>
+
+                    <input
+                        type="checkbox"
+                        class="checkbox-blokir"
+                        ${
+                            checked
+                            ? "checked"
+                            : ""
+                        }
+                        onchange="
+                            ubahStatusBlokir(
+                                '${escapeQuotes(item.tanker)}',
+                                this.checked
+                            )
+                        "
+                    >
+
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   BLOKIR
+===================================================== */
+
+function ubahStatusBlokir(
+    tanker,
+    status
+) {
+
+    if (
+        status
+    ) {
+
+        dataBlokir[tanker] =
+            true;
+
+    } else {
+
+        delete dataBlokir[tanker];
+
+    }
+
+
+    localStorage.setItem(
+        "dataBlokir",
+        JSON.stringify(
+            dataBlokir
+        )
+    );
+
+}
+
+
+/* =====================================================
+   RIWAYAT UPLOAD
+===================================================== */
+
+function tampilkanRiwayatUpload() {
+
+    const table =
+        document.getElementById(
+            "uploadHistory"
+        );
+
+
+    table.innerHTML = "";
+
+
+    if (
+        uploadRecords.length === 0
+    ) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="4"
+                    class="empty"
+                >
+                    Belum ada upload LO Closing.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    const records =
+        [...uploadRecords]
+            .sort(
+                (a, b) =>
+                    b.tanggal.localeCompare(
+                        a.tanggal
+                    )
+            );
+
+
+    records.forEach(
+        record => {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${formatTanggal(
+                        record.tanggal
+                    )}
+                </td>
+
+                <td>
+                    ${record.namaFile}
+                </td>
+
+                <td>
+                    ${record.jumlah}
+                </td>
+
+                <td>
+
+                    <button
+                        class="btn-danger"
+                        onclick="
+                            hapusUpload(
+                                ${record.id}
+                            )
+                        "
+                    >
+                        Hapus
+                    </button>
+
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   HAPUS UPLOAD
+===================================================== */
+
+function hapusUpload(
+    id
+) {
+
+    const record =
+        uploadRecords.find(
+            item =>
+                item.id === id
+        );
+
+
+    if (!record) {
+
+        return;
+
+    }
+
+
+    const yakin =
+        confirm(
+            "Hapus upload " +
+            record.namaFile +
+            " tanggal " +
+            formatTanggal(
+                record.tanggal
+            ) +
+            "?"
+        );
+
+
+    if (!yakin) {
+
+        return;
+
+    }
+
+
+    /*
+    Hapus record
+    */
+
+    uploadRecords =
+        uploadRecords.filter(
+            item =>
+                item.id !== id
+        );
+
+
+    /*
+    Karena dataRit dari upload
+    sudah tergabung, kita rebuild
+    data rit dari seluruh upload.
+    */
+
+
+    /*
+    Ambil ulang data awal Excel
+    */
+
+    dataRit = {};
+
+
+    localStorage.removeItem(
+        "excelRitSudahDibaca"
+    );
+
+
+    /*
+    Kita perlu reload halaman supaya
+    Excel awal dibaca kembali,
+    lalu upload yang masih ada
+    ditambahkan lagi.
+    */
+
+    localStorage.setItem(
+        "uploadRecords",
+        JSON.stringify(
+            uploadRecords
+        )
+    );
+
+
+    location.reload();
+
+}
+
+
+/* =====================================================
+   TANGGAL TERBARU
+===================================================== */
+
+function dapatkanTanggalTerbaru() {
+
+    const tanggal =
+        Object.keys(
+            dataRit
+        );
+
+
+    if (
+        tanggal.length === 0
+    ) {
+
+        return "";
+
+    }
+
+
+    tanggal.sort();
+
+
+    return tanggal[
+        tanggal.length - 1
+    ];
+
+}
+
+
+/* =====================================================
+   SELISIH HARI
+===================================================== */
+
+function selisihHari(
+    tanggalAwal,
+    tanggalAkhir
+) {
+
+    const awal =
+        new Date(
+            tanggalAwal +
+            "T00:00:00"
+        );
+
+
+    const akhir =
+        new Date(
+            tanggalAkhir +
+            "T00:00:00"
+        );
+
+
+    return Math.floor(
+        (
+            akhir - awal
+        ) /
+        (
+            1000 *
+            60 *
+            60 *
+            24
+        )
+    );
+
+}
+
+
+/* =====================================================
+   FORMAT TANGGAL
+===================================================== */
+
+function formatTanggal(
+    tanggal
+) {
+
+    if (!tanggal) {
+
+        return "-";
+
+    }
+
+
+    const [tahun, bulan, hari] =
+        tanggal.split("-");
+
+
+    const namaBulan = [
+
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember"
+
+    ];
+
+
+    return (
+        parseInt(hari) +
+        " " +
+        namaBulan[
+            parseInt(bulan) - 1
+        ] +
+        " " +
+        tahun
+    );
+
+}
+
+
+/* =====================================================
+   ESCAPE
+===================================================== */
+
+function escapeQuotes(
+    text
+) {
+
+    return String(text)
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+        .replace(
+            /'/g,
+            "\\'"
+        );
+
+}
+
+
+/* =====================================================
+   PESAN
+===================================================== */
+
+function tampilkanPesan(
+    pesan,
+    tipe
+) {
+
+    const message =
+        document.getElementById(
+            "uploadMessage"
+        );
+
+
+    message.textContent =
+        pesan;
+
+
+    message.className =
+        "message " +
+        tipe;
+
+}
+
+
+/* =====================================================
+   HASIL
+===================================================== */
+
+function lihatHasil() {
+
+    window.location.href =
+        "hasil.html";
+
+}
+
+</script>
+
+</body>
+</html>
