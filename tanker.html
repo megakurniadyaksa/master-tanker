@@ -523,19 +523,18 @@ async function bacaExcelMaster() {
         Jadi kita ambil row[1].
         */
 
-        let daftarTanker =
-            rows
-                .slice(1)
-                .map(
-                    row =>
-                        String(
-                            row[1] || ""
-                        ).trim()
-                )
-                .filter(
-                    tanker =>
-                        tanker !== ""
-                );
+        let daftarTanker = [];
+
+        for (let i = 1; i < rows.length; i++) {
+
+            const tanker = String(
+                rows[i][1] || ""
+                ).trim();
+
+            if (tanker !== "") {
+            daftarTanker.push(tanker);
+            }
+        }
 
 
         /*
