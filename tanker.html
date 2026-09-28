@@ -2,6 +2,7 @@
 <html lang="id">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -20,6 +22,10 @@
             background: #f5f7fb;
             color: #222;
         }
+
+        /* ==============================
+           SIDEBAR
+        ============================== */
 
         .sidebar {
             position: fixed;
@@ -55,6 +61,10 @@
             font-weight: bold;
         }
 
+        /* ==============================
+           CONTENT
+        ============================== */
+
         .content {
             margin-left: 230px;
             padding: 35px;
@@ -65,6 +75,10 @@
             margin-bottom: 25px;
         }
 
+        /* ==============================
+           CARD
+        ============================== */
+
         .card {
             background: white;
             border-radius: 12px;
@@ -73,9 +87,25 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
+        /* ==============================
+           SUMMARY
+        ============================== */
+
+        .summary-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .summary-box {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
         .summary {
             color: #666;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .total {
@@ -85,13 +115,26 @@
             margin-top: 8px;
         }
 
+        .total-aktif {
+            color: #15803d;
+        }
+
+        .total-nonaktif {
+            color: #dc2626;
+        }
+
+        /* ==============================
+           FORM
+        ============================== */
+
         .form-row {
             display: flex;
             gap: 10px;
             margin-top: 15px;
         }
 
-        input {
+        input,
+        select {
             flex: 1;
             padding: 12px;
             border: 1px solid #d1d5db;
@@ -99,10 +142,15 @@
             font-size: 14px;
         }
 
-        input:focus {
+        input:focus,
+        select:focus {
             outline: none;
             border-color: #3157d5;
         }
+
+        /* ==============================
+           BUTTON
+        ============================== */
 
         button {
             border: none;
@@ -126,10 +174,22 @@
             color: #333;
         }
 
+        .btn-edit:hover {
+            background: #e5e7eb;
+        }
+
         .btn-delete {
             background: #fee2e2;
             color: #dc2626;
         }
+
+        .btn-delete:hover {
+            background: #fecaca;
+        }
+
+        /* ==============================
+           SEARCH
+        ============================== */
 
         .search-box {
             margin-top: 15px;
@@ -139,6 +199,10 @@
             border-radius: 7px;
             font-size: 14px;
         }
+
+        /* ==============================
+           TABLE
+        ============================== */
 
         table {
             width: 100%;
@@ -162,6 +226,32 @@
             gap: 7px;
         }
 
+        /* ==============================
+           STATUS
+        ============================== */
+
+        .status {
+            display: inline-block;
+            padding: 5px 11px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-aktif {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-nonaktif {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* ==============================
+           MESSAGE
+        ============================== */
+
         .message {
             margin-top: 12px;
             font-size: 14px;
@@ -179,13 +269,22 @@
             color: #3157d5;
         }
 
+        /* ==============================
+           EMPTY
+        ============================== */
+
         .empty {
             text-align: center;
             padding: 30px;
             color: #888;
         }
 
+        /* ==============================
+           RESPONSIVE
+        ============================== */
+
         @media (max-width: 800px) {
+
             .sidebar {
                 width: 190px;
             }
@@ -198,13 +297,25 @@
             .form-row {
                 flex-direction: column;
             }
+
+            .summary-container {
+                grid-template-columns: 1fr;
+            }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
-    <!-- SIDEBAR -->
+
+    <!-- =========================================
+         SIDEBAR
+    ========================================== -->
+
     <div class="sidebar">
 
         <div class="logo">
@@ -230,7 +341,10 @@
     </div>
 
 
-    <!-- CONTENT -->
+    <!-- =========================================
+         CONTENT
+    ========================================== -->
+
     <div class="content">
 
         <h1>
@@ -238,24 +352,77 @@
         </h1>
 
 
-        <!-- TOTAL -->
+        <!-- =====================================
+             SUMMARY
+        ====================================== -->
+
         <div class="card">
 
-            <div class="summary">
-                Total Master Tanker
-            </div>
+            <div class="summary-container">
 
-            <div
-                class="total"
-                id="totalTanker"
-            >
-                0
+
+                <!-- TOTAL MASTER TANKER -->
+
+                <div class="summary-box">
+
+                    <div class="summary">
+                        Total Master Tanker
+                    </div>
+
+                    <div
+                        class="total"
+                        id="totalTanker"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+
+                <!-- TOTAL AKTIF -->
+
+                <div class="summary-box">
+
+                    <div class="summary">
+                        Tanker Aktif
+                    </div>
+
+                    <div
+                        class="total total-aktif"
+                        id="totalAktif"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+
+                <!-- TOTAL NON AKTIF -->
+
+                <div class="summary-box">
+
+                    <div class="summary">
+                        Tanker Non-Aktif
+                    </div>
+
+                    <div
+                        class="total total-nonaktif"
+                        id="totalNonAktif"
+                    >
+                        0
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
 
 
-        <!-- TAMBAH TANKER -->
+        <!-- =====================================
+             TAMBAH MASTER TANKER
+        ====================================== -->
+
         <div class="card">
 
             <h3>
@@ -264,11 +431,41 @@
 
             <div class="form-row">
 
+
+                <!-- NOMOR -->
+
+                <input
+                    type="text"
+                    id="inputNomor"
+                    placeholder="Nomor"
+                >
+
+
+                <!-- TANKER NUMBER -->
+
                 <input
                     type="text"
                     id="inputTanker"
-                    placeholder="Masukkan nomor tanker"
+                    placeholder="Masukkan Tanker Number"
                 >
+
+
+                <!-- STATUS -->
+
+                <select id="inputStatus">
+
+                    <option value="AKTIF">
+                        AKTIF
+                    </option>
+
+                    <option value="NON-AKTIF">
+                        NON-AKTIF
+                    </option>
+
+                </select>
+
+
+                <!-- BUTTON -->
 
                 <button
                     class="btn-add"
@@ -279,6 +476,7 @@
 
             </div>
 
+
             <div
                 id="message"
                 class="message"
@@ -287,12 +485,18 @@
         </div>
 
 
-        <!-- DAFTAR TANKER -->
+        <!-- =====================================
+             DAFTAR MASTER TANKER
+        ====================================== -->
+
         <div class="card">
 
             <h3>
                 Daftar Master Tanker
             </h3>
+
+
+            <!-- SEARCH -->
 
             <input
                 type="text"
@@ -301,6 +505,9 @@
                 placeholder="🔎 Cari Tanker Number..."
                 oninput="tampilkanData()"
             >
+
+
+            <!-- TABLE -->
 
             <table>
 
@@ -316,6 +523,10 @@
                             Tanker Number
                         </th>
 
+                        <th>
+                            Status
+                        </th>
+
                         <th style="width:180px;">
                             Aksi
                         </th>
@@ -324,7 +535,9 @@
 
                 </thead>
 
+
                 <tbody id="tankerTable">
+
                 </tbody>
 
             </table>
@@ -336,11 +549,13 @@
 
 <script>
 
+
 /* =====================================================
    KONFIGURASI
 ===================================================== */
 
 const namaFileMaster = "data tanker.xlsx";
+
 const STORAGE_KEY = "dataTanker";
 
 
@@ -355,13 +570,16 @@ let dataTanker = [];
    SAAT HALAMAN DIBUKA
 ===================================================== */
 
-window.addEventListener("DOMContentLoaded", async function () {
+window.addEventListener(
+    "DOMContentLoaded",
+    async function () {
 
-    await bacaExcelMaster();
+        await bacaExcelMaster();
 
-    tampilkanData();
+        tampilkanData();
 
-});
+    }
+);
 
 
 /* =====================================================
@@ -375,11 +593,13 @@ async function bacaExcelMaster() {
         "loading"
     );
 
+
     try {
 
-        /*
-        Ambil file Excel terbaru.
-        */
+
+        /* ---------------------------------------------
+           AMBIL FILE EXCEL
+        --------------------------------------------- */
 
         const response = await fetch(
             namaFileMaster + "?v=" + Date.now(),
@@ -398,30 +618,37 @@ async function bacaExcelMaster() {
         }
 
 
+        /* ---------------------------------------------
+           BACA FILE SEBAGAI ARRAY BUFFER
+        --------------------------------------------- */
+
         const arrayBuffer =
             await response.arrayBuffer();
 
 
-        /*
-        Buka Excel.
-        */
+        /* ---------------------------------------------
+           BUKA EXCEL
+        --------------------------------------------- */
 
         const workbook =
-            XLSX.read(arrayBuffer, {
-                type: "array"
-            });
+            XLSX.read(
+                arrayBuffer,
+                {
+                    type: "array"
+                }
+            );
 
 
-        /*
-        Ambil sheet bernama "data".
-        */
+        /* ---------------------------------------------
+           AMBIL SHEET DATA
+        --------------------------------------------- */
 
         let worksheet =
             workbook.Sheets["data"];
 
 
         /*
-        Kalau sheet "data" tidak ada,
+        Kalau tidak ada sheet bernama "data",
         gunakan sheet pertama.
         */
 
@@ -444,24 +671,9 @@ async function bacaExcelMaster() {
         }
 
 
-        /*
-        =================================================
-        CEK RANGE EXCEL
-        =================================================
-
-        Contoh:
-
-        A1 = Nomor
-        B1 = Tanker Number
-
-        A2 = 1
-        B2 = AB86760E
-
-        ...
-
-        A541 = 540
-        B541 = tanker terakhir
-        */
+        /* ---------------------------------------------
+           RANGE EXCEL
+        --------------------------------------------- */
 
         const range =
             XLSX.utils.decode_range(
@@ -469,18 +681,28 @@ async function bacaExcelMaster() {
             );
 
 
-        /*
-        =================================================
-        BACA KOLOM B
-        =================================================
-
-        rowIndex 0 = baris Excel 1 = HEADER
-
-        Jadi mulai dari rowIndex 1
-        = baris Excel 2.
-        */
+        /* ---------------------------------------------
+           ARRAY DATA
+        --------------------------------------------- */
 
         const daftarTanker = [];
+
+
+        /*
+
+        STRUKTUR EXCEL:
+
+        Kolom A = Kolom 1 = Nomor
+        Kolom B = Kolom 2 = Tanker Number
+        Kolom M = Kolom 13 = Status
+
+        Kolom C sampai L TIDAK DIBACA.
+
+        Baris 1 dianggap HEADER.
+
+        Jadi pembacaan dimulai dari baris 2.
+
+        */
 
 
         for (
@@ -489,77 +711,160 @@ async function bacaExcelMaster() {
             rowIndex++
         ) {
 
-            /*
-            Kolom B = nomor kolom 1
-            */
 
-            const alamatCell =
-                XLSX.utils.encode_cell({
-                    r: rowIndex,
-                    c: 1
-                });
+            /* -----------------------------------------
+               KOLOM 1 / A = NOMOR
+            ----------------------------------------- */
+
+            const cellNomor =
+                worksheet[
+                    XLSX.utils.encode_cell({
+                        r: rowIndex,
+                        c: 0
+                    })
+                ];
 
 
-            const cell =
-                worksheet[alamatCell];
+            /* -----------------------------------------
+               KOLOM 2 / B = TANKER NUMBER
+            ----------------------------------------- */
+
+            const cellTanker =
+                worksheet[
+                    XLSX.utils.encode_cell({
+                        r: rowIndex,
+                        c: 1
+                    })
+                ];
 
 
-            /*
-            Ambil nilai cell.
-            */
+            /* -----------------------------------------
+               KOLOM 13 / M = STATUS
+            ----------------------------------------- */
+
+            const cellStatus =
+                worksheet[
+                    XLSX.utils.encode_cell({
+                        r: rowIndex,
+                        c: 12
+                    })
+                ];
+
+
+            /* -----------------------------------------
+               AMBIL NILAI NOMOR
+            ----------------------------------------- */
+
+            let nomor = "";
 
             if (
-                cell &&
-                cell.v !== undefined &&
-                cell.v !== null
+                cellNomor &&
+                cellNomor.v !== undefined &&
+                cellNomor.v !== null
             ) {
 
-                const tanker =
-                    String(cell.v).trim();
+                nomor =
+                    String(
+                        cellNomor.v
+                    ).trim();
+
+            }
 
 
-                if (tanker !== "") {
+            /* -----------------------------------------
+               AMBIL NILAI TANKER
+            ----------------------------------------- */
 
-                    daftarTanker.push(
-                        tanker
-                    );
+            let tanker = "";
 
-                }
+            if (
+                cellTanker &&
+                cellTanker.v !== undefined &&
+                cellTanker.v !== null
+            ) {
+
+                tanker =
+                    String(
+                        cellTanker.v
+                    ).trim();
+
+            }
+
+
+            /* -----------------------------------------
+               AMBIL NILAI STATUS
+            ----------------------------------------- */
+
+            let status = "";
+
+            if (
+                cellStatus &&
+                cellStatus.v !== undefined &&
+                cellStatus.v !== null
+            ) {
+
+                status =
+                    String(
+                        cellStatus.v
+                    ).trim()
+                    .toUpperCase();
+
+            }
+
+
+            /* -----------------------------------------
+               HANYA MASUKKAN DATA YANG MEMILIKI
+               TANKER NUMBER
+            ----------------------------------------- */
+
+            if (tanker !== "") {
+
+                daftarTanker.push({
+
+                    nomor: nomor,
+
+                    tanker: tanker,
+
+                    status: status
+
+                });
 
             }
 
         }
 
 
-        /*
-        =================================================
-        URUTKAN DATA
-        =================================================
-        */
+        /* ---------------------------------------------
+           URUTKAN BERDASARKAN TANKER NUMBER
+        --------------------------------------------- */
 
-        daftarTanker.sort(function (a, b) {
+        daftarTanker.sort(
+            function (a, b) {
 
-            return a.localeCompare(
-                b,
-                undefined,
-                {
-                    numeric: true,
-                    sensitivity: "base"
-                }
-            );
+                return a.tanker.localeCompare(
+                    b.tanker,
+                    undefined,
+                    {
+                        numeric: true,
+                        sensitivity: "base"
+                    }
+                );
 
-        });
+            }
+        );
 
 
-        /*
-        =================================================
-        SIMPAN
-        =================================================
-        */
+        /* ---------------------------------------------
+           SIMPAN KE DATA UTAMA
+        --------------------------------------------- */
 
         dataTanker =
             daftarTanker;
 
+
+        /* ---------------------------------------------
+           SIMPAN KE LOCAL STORAGE
+        --------------------------------------------- */
 
         localStorage.setItem(
             STORAGE_KEY,
@@ -567,14 +872,16 @@ async function bacaExcelMaster() {
         );
 
 
-        /*
-        =================================================
-        TAMPILKAN
-        =================================================
-        */
+        /* ---------------------------------------------
+           TAMPILKAN DATA
+        --------------------------------------------- */
 
         tampilkanData();
 
+
+        /* ---------------------------------------------
+           PESAN BERHASIL
+        --------------------------------------------- */
 
         tampilkanPesan(
             "Data Master Tanker berhasil diperbarui dari Excel. Total: " +
@@ -584,14 +891,15 @@ async function bacaExcelMaster() {
         );
 
 
-        /*
-        Informasi untuk pengecekan.
-        */
+        /* ---------------------------------------------
+           CONSOLE UNTUK PENGECEKAN
+        --------------------------------------------- */
 
         console.log(
             "Jumlah seluruh baris Excel:",
             range.e.r + 1
         );
+
 
         console.log(
             "Jumlah Master Tanker:",
@@ -599,15 +907,23 @@ async function bacaExcelMaster() {
         );
 
 
-    } catch (error) {
+        console.log(
+            "Data Master Tanker:",
+            dataTanker
+        );
+
+
+    }
+
+    catch (error) {
+
 
         console.error(error);
 
 
-        /*
-        Kalau Excel gagal dibaca,
-        gunakan data terakhir.
-        */
+        /* ---------------------------------------------
+           JIKA EXCEL GAGAL DIBACA
+        --------------------------------------------- */
 
         const dataLama =
             localStorage.getItem(
@@ -617,10 +933,24 @@ async function bacaExcelMaster() {
 
         if (dataLama) {
 
-            dataTanker =
-                JSON.parse(dataLama);
+            try {
 
-        } else {
+                dataTanker =
+                    JSON.parse(
+                        dataLama
+                    );
+
+            }
+
+            catch {
+
+                dataTanker = [];
+
+            }
+
+        }
+
+        else {
 
             dataTanker = [];
 
@@ -642,10 +972,41 @@ async function bacaExcelMaster() {
 
 
 /* =====================================================
+   CEK APAKAH STATUS AKTIF
+===================================================== */
+
+function isAktif(status) {
+
+    return String(status)
+        .trim()
+        .toUpperCase() === "AKTIF";
+
+}
+
+
+/* =====================================================
+   CEK APAKAH STATUS NON-AKTIF
+===================================================== */
+
+function isNonAktif(status) {
+
+    return String(status)
+        .trim()
+        .toUpperCase() === "NON-AKTIF";
+
+}
+
+
+/* =====================================================
    TAMPILKAN DATA
 ===================================================== */
 
 function tampilkanData() {
+
+
+    /* ---------------------------------------------
+       AMBIL ELEMENT HTML
+    --------------------------------------------- */
 
     const table =
         document.getElementById(
@@ -659,11 +1020,27 @@ function tampilkanData() {
         );
 
 
+    const totalAktif =
+        document.getElementById(
+            "totalAktif"
+        );
+
+
+    const totalNonAktif =
+        document.getElementById(
+            "totalNonAktif"
+        );
+
+
     const search =
         document.getElementById(
             "searchTanker"
         );
 
+
+    /* ---------------------------------------------
+       NILAI PENCARIAN
+    --------------------------------------------- */
 
     const kataCari =
         search
@@ -673,38 +1050,110 @@ function tampilkanData() {
             : "";
 
 
-    const dataTampil =
-        dataTanker.filter(function (tanker) {
+    /* ---------------------------------------------
+       HITUNG TOTAL MASTER TANKER
+    --------------------------------------------- */
 
-            return tanker
-                .toLowerCase()
-                .includes(kataCari);
-
-        });
-
-
-    /*
-    Total Master Tanker.
-    */
-
-    total.textContent =
+    const jumlahTotal =
         dataTanker.length;
 
+
+    /* ---------------------------------------------
+       HITUNG AKTIF
+    --------------------------------------------- */
+
+    const jumlahAktif =
+        dataTanker.filter(
+            function (item) {
+
+                return isAktif(
+                    item.status
+                );
+
+            }
+        ).length;
+
+
+    /* ---------------------------------------------
+       HITUNG NON-AKTIF
+    --------------------------------------------- */
+
+    const jumlahNonAktif =
+        dataTanker.filter(
+            function (item) {
+
+                return isNonAktif(
+                    item.status
+                );
+
+            }
+        ).length;
+
+
+    /* ---------------------------------------------
+       TAMPILKAN SUMMARY
+    --------------------------------------------- */
+
+    total.textContent =
+        jumlahTotal;
+
+
+    totalAktif.textContent =
+        jumlahAktif;
+
+
+    totalNonAktif.textContent =
+        jumlahNonAktif;
+
+
+    /* ---------------------------------------------
+       FILTER DATA BERDASARKAN SEARCH
+    --------------------------------------------- */
+
+    const dataTampil =
+        dataTanker.filter(
+            function (item) {
+
+                return item.tanker
+                    .toLowerCase()
+                    .includes(
+                        kataCari
+                    );
+
+            }
+        );
+
+
+    /* ---------------------------------------------
+       KOSONGKAN TABLE
+    --------------------------------------------- */
 
     table.innerHTML = "";
 
 
-    if (dataTampil.length === 0) {
+    /* ---------------------------------------------
+       JIKA TIDAK ADA DATA
+    --------------------------------------------- */
+
+    if (
+        dataTampil.length === 0
+    ) {
 
         table.innerHTML = `
+
             <tr>
+
                 <td
-                    colspan="3"
+                    colspan="4"
                     class="empty"
                 >
+
                     Tidak ada tanker yang ditemukan.
+
                 </td>
+
             </tr>
+
         `;
 
         return;
@@ -712,54 +1161,101 @@ function tampilkanData() {
     }
 
 
-    dataTampil.forEach(function (tanker) {
+    /* ---------------------------------------------
+       TAMPILKAN DATA
+    --------------------------------------------- */
 
-        const index =
-            dataTanker.indexOf(tanker);
-
-
-        const row =
-            document.createElement("tr");
+    dataTampil.forEach(
+        function (item) {
 
 
-        row.innerHTML = `
+            const index =
+                dataTanker.indexOf(
+                    item
+                );
 
-            <td>
-                ${index + 1}
-            </td>
 
-            <td>
-                ${tanker}
-            </td>
+            const row =
+                document.createElement(
+                    "tr"
+                );
 
-            <td>
 
-                <div class="action">
+            /* -----------------------------------------
+               CLASS STATUS
+            ----------------------------------------- */
 
-                    <button
-                        class="btn-edit"
-                        onclick="editTanker(${index})"
+            let statusClass =
+                "status-nonaktif";
+
+
+            if (
+                isAktif(
+                    item.status
+                )
+            ) {
+
+                statusClass =
+                    "status-aktif";
+
+            }
+
+
+            /* -----------------------------------------
+               HTML ROW
+            ----------------------------------------- */
+
+            row.innerHTML = `
+
+                <td>
+                    ${item.nomor || index + 1}
+                </td>
+
+                <td>
+                    ${item.tanker}
+                </td>
+
+                <td>
+
+                    <span
+                        class="status ${statusClass}"
                     >
-                        Edit
-                    </button>
+                        ${item.status || "-"}
+                    </span>
 
-                    <button
-                        class="btn-delete"
-                        onclick="hapusTanker(${index})"
-                    >
-                        Hapus
-                    </button>
+                </td>
 
-                </div>
+                <td>
 
-            </td>
+                    <div class="action">
 
-        `;
+                        <button
+                            class="btn-edit"
+                            onclick="editTanker(${index})"
+                        >
+                            Edit
+                        </button>
+
+                        <button
+                            class="btn-delete"
+                            onclick="hapusTanker(${index})"
+                        >
+                            Hapus
+                        </button>
+
+                    </div>
+
+                </td>
+
+            `;
 
 
-        table.appendChild(row);
+            table.appendChild(
+                row
+            );
 
-    });
+        }
+    );
 
 }
 
@@ -770,17 +1266,44 @@ function tampilkanData() {
 
 function tambahTanker() {
 
-    const input =
+
+    const inputNomor =
+        document.getElementById(
+            "inputNomor"
+        );
+
+
+    const inputTanker =
         document.getElementById(
             "inputTanker"
         );
 
 
+    const inputStatus =
+        document.getElementById(
+            "inputStatus"
+        );
+
+
     const nomor =
-        input.value.trim();
+        inputNomor.value.trim();
 
 
-    if (nomor === "") {
+    const tanker =
+        inputTanker.value.trim();
+
+
+    const status =
+        inputStatus.value;
+
+
+    /* ---------------------------------------------
+       CEK TANKER NUMBER
+    --------------------------------------------- */
+
+    if (
+        tanker === ""
+    ) {
 
         tampilkanPesan(
             "Nomor tanker belum diisi.",
@@ -792,13 +1315,20 @@ function tambahTanker() {
     }
 
 
+    /* ---------------------------------------------
+       CEK DUPLIKAT
+    --------------------------------------------- */
+
     const sudahAda =
-        dataTanker.some(function (tanker) {
+        dataTanker.some(
+            function (item) {
 
-            return tanker.toLowerCase() ===
-                nomor.toLowerCase();
+                return item.tanker
+                    .toLowerCase() ===
+                    tanker.toLowerCase();
 
-        });
+            }
+        );
 
 
     if (sudahAda) {
@@ -813,31 +1343,71 @@ function tambahTanker() {
     }
 
 
-    dataTanker.push(nomor);
+    /* ---------------------------------------------
+       TAMBAHKAN DATA
+    --------------------------------------------- */
 
+    dataTanker.push({
 
-    dataTanker.sort(function (a, b) {
+        nomor:
+            nomor ||
+            String(
+                dataTanker.length + 1
+            ),
 
-        return a.localeCompare(
-            b,
-            undefined,
-            {
-                numeric: true,
-                sensitivity: "base"
-            }
-        );
+        tanker:
+            tanker,
+
+        status:
+            status
 
     });
 
 
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(dataTanker)
+    /* ---------------------------------------------
+       URUTKAN
+    --------------------------------------------- */
+
+    dataTanker.sort(
+        function (a, b) {
+
+            return a.tanker.localeCompare(
+                b.tanker,
+                undefined,
+                {
+                    numeric: true,
+                    sensitivity: "base"
+                }
+            );
+
+        }
     );
 
 
-    input.value = "";
+    /* ---------------------------------------------
+       SIMPAN
+    --------------------------------------------- */
 
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(
+            dataTanker
+        )
+    );
+
+
+    /* ---------------------------------------------
+       KOSONGKAN INPUT
+    --------------------------------------------- */
+
+    inputNomor.value = "";
+
+    inputTanker.value = "";
+
+
+    /* ---------------------------------------------
+       UPDATE TABLE
+    --------------------------------------------- */
 
     tampilkanData();
 
@@ -856,32 +1426,41 @@ function tambahTanker() {
 
 function editTanker(index) {
 
-    const nomorLama =
+
+    const item =
         dataTanker[index];
 
 
-    const nomorBaru =
+    /* ---------------------------------------------
+       EDIT TANKER NUMBER
+    --------------------------------------------- */
+
+    const tankerBaru =
         prompt(
-            "Edit nomor tanker:",
-            nomorLama
+            "Edit Tanker Number:",
+            item.tanker
         );
 
 
-    if (nomorBaru === null) {
+    if (
+        tankerBaru === null
+    ) {
 
         return;
 
     }
 
 
-    const nomor =
-        nomorBaru.trim();
+    const tanker =
+        tankerBaru.trim();
 
 
-    if (nomor === "") {
+    if (
+        tanker === ""
+    ) {
 
         alert(
-            "Nomor tanker tidak boleh kosong."
+            "Tanker Number tidak boleh kosong."
         );
 
         return;
@@ -889,16 +1468,23 @@ function editTanker(index) {
     }
 
 
+    /* ---------------------------------------------
+       CEK DUPLIKAT
+    --------------------------------------------- */
+
     const duplikat =
-        dataTanker.some(function (tanker, i) {
+        dataTanker.some(
+            function (data, i) {
 
-            return (
-                i !== index &&
-                tanker.toLowerCase() ===
-                nomor.toLowerCase()
-            );
+                return (
+                    i !== index &&
+                    data.tanker
+                        .toLowerCase() ===
+                    tanker.toLowerCase()
+                );
 
-        });
+            }
+        );
 
 
     if (duplikat) {
@@ -912,35 +1498,83 @@ function editTanker(index) {
     }
 
 
-    dataTanker[index] =
-        nomor;
+    /* ---------------------------------------------
+       EDIT STATUS
+    --------------------------------------------- */
 
-
-    dataTanker.sort(function (a, b) {
-
-        return a.localeCompare(
-            b,
-            undefined,
-            {
-                numeric: true,
-                sensitivity: "base"
-            }
+    const statusBaru =
+        prompt(
+            "Edit Status:\n\nKetik AKTIF atau NON-AKTIF",
+            item.status
         );
 
-    });
 
+    if (
+        statusBaru === null
+    ) {
+
+        return;
+
+    }
+
+
+    const status =
+        statusBaru
+            .trim()
+            .toUpperCase();
+
+
+    /* ---------------------------------------------
+       VALIDASI STATUS
+    --------------------------------------------- */
+
+    if (
+        status !== "AKTIF" &&
+        status !== "NON-AKTIF"
+    ) {
+
+        alert(
+            "Status harus AKTIF atau NON-AKTIF."
+        );
+
+        return;
+
+    }
+
+
+    /* ---------------------------------------------
+       UPDATE DATA
+    --------------------------------------------- */
+
+    dataTanker[index].tanker =
+        tanker;
+
+
+    dataTanker[index].status =
+        status;
+
+
+    /* ---------------------------------------------
+       SIMPAN
+    --------------------------------------------- */
 
     localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify(dataTanker)
+        JSON.stringify(
+            dataTanker
+        )
     );
 
+
+    /* ---------------------------------------------
+       UPDATE TAMPILAN
+    --------------------------------------------- */
 
     tampilkanData();
 
 
     tampilkanPesan(
-        "Nomor tanker berhasil diedit.",
+        "Data tanker berhasil diedit.",
         "success"
     );
 
@@ -953,24 +1587,31 @@ function editTanker(index) {
 
 function hapusTanker(index) {
 
-    const nomor =
+
+    const item =
         dataTanker[index];
 
 
     const yakin =
         confirm(
             "Yakin ingin menghapus tanker " +
-            nomor +
+            item.tanker +
             "?"
         );
 
 
-    if (!yakin) {
+    if (
+        !yakin
+    ) {
 
         return;
 
     }
 
+
+    /* ---------------------------------------------
+       HAPUS
+    --------------------------------------------- */
 
     dataTanker.splice(
         index,
@@ -978,11 +1619,21 @@ function hapusTanker(index) {
     );
 
 
+    /* ---------------------------------------------
+       SIMPAN
+    --------------------------------------------- */
+
     localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify(dataTanker)
+        JSON.stringify(
+            dataTanker
+        )
     );
 
+
+    /* ---------------------------------------------
+       UPDATE TAMPILAN
+    --------------------------------------------- */
 
     tampilkanData();
 
@@ -996,13 +1647,14 @@ function hapusTanker(index) {
 
 
 /* =====================================================
-   PESAN
+   TAMPILKAN PESAN
 ===================================================== */
 
 function tampilkanPesan(
     pesan,
     tipe
 ) {
+
 
     const message =
         document.getElementById(
@@ -1022,5 +1674,7 @@ function tampilkanPesan(
 
 </script>
 
+
 </body>
+
 </html>
