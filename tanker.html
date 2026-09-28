@@ -4,17 +4,23 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Data Tanker - Master Tanker</title>
 
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
 
     <style>
 
         * {
             box-sizing: border-box;
         }
+
 
         body {
             margin: 0;
@@ -23,283 +29,489 @@
             color: #222;
         }
 
-        /* ==============================
+
+        /* =========================================
            SIDEBAR
-        ============================== */
+        ========================================= */
 
         .sidebar {
+
             position: fixed;
+
             left: 0;
             top: 0;
+
             width: 230px;
             height: 100vh;
+
             background: white;
+
             border-right: 1px solid #e5e7eb;
+
             padding: 25px 15px;
+
         }
+
 
         .logo {
+
             font-size: 22px;
+
             font-weight: bold;
+
             margin-bottom: 35px;
+
             padding-left: 10px;
+
         }
 
+
         .menu a {
+
             display: block;
+
             text-decoration: none;
+
             color: #555;
+
             padding: 13px 15px;
+
             margin-bottom: 6px;
+
             border-radius: 8px;
+
         }
+
 
         .menu a:hover,
         .menu a.active {
+
             background: #eef2ff;
+
             color: #3157d5;
+
             font-weight: bold;
+
         }
 
-        /* ==============================
+
+        /* =========================================
            CONTENT
-        ============================== */
+        ========================================= */
 
         .content {
+
             margin-left: 230px;
+
             padding: 35px;
+
         }
+
 
         h1 {
+
             margin-top: 0;
+
             margin-bottom: 25px;
+
         }
 
-        /* ==============================
+
+        /* =========================================
            CARD
-        ============================== */
+        ========================================= */
 
         .card {
+
             background: white;
+
             border-radius: 12px;
+
             padding: 22px;
+
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.05);
+
         }
 
-        /* ==============================
+
+        /* =========================================
            SUMMARY
-        ============================== */
+        ========================================= */
 
         .summary-container {
+
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
             gap: 15px;
+
         }
+
 
         .summary-box {
+
             background: #f8fafc;
+
             border-radius: 10px;
+
             padding: 20px;
+
         }
+
 
         .summary {
+
             color: #666;
+
             font-size: 14px;
+
         }
+
 
         .total {
+
             font-size: 32px;
+
             font-weight: bold;
+
             color: #3157d5;
+
             margin-top: 8px;
+
         }
+
 
         .total-aktif {
+
             color: #15803d;
+
         }
+
 
         .total-nonaktif {
+
             color: #dc2626;
+
         }
 
-        /* ==============================
+
+        /* =========================================
            FORM
-        ============================== */
+        ========================================= */
 
         .form-row {
+
             display: flex;
+
             gap: 10px;
+
             margin-top: 15px;
+
         }
+
 
         input,
         select {
+
             flex: 1;
+
             padding: 12px;
-            border: 1px solid #d1d5db;
+
+            border:
+                1px solid #d1d5db;
+
             border-radius: 7px;
+
             font-size: 14px;
+
         }
+
 
         input:focus,
         select:focus {
+
             outline: none;
+
             border-color: #3157d5;
+
         }
 
-        /* ==============================
+
+        /* =========================================
            BUTTON
-        ============================== */
+        ========================================= */
 
         button {
+
             border: none;
+
             border-radius: 7px;
+
             padding: 11px 18px;
+
             cursor: pointer;
+
             font-size: 14px;
+
         }
+
 
         .btn-add {
+
             background: #3157d5;
+
             color: white;
+
         }
+
 
         .btn-add:hover {
+
             background: #2647b5;
+
         }
+
 
         .btn-edit {
+
             background: #f3f4f6;
+
             color: #333;
+
         }
+
 
         .btn-edit:hover {
+
             background: #e5e7eb;
+
         }
+
 
         .btn-delete {
+
             background: #fee2e2;
+
             color: #dc2626;
+
         }
+
 
         .btn-delete:hover {
+
             background: #fecaca;
+
         }
 
-        /* ==============================
+
+        /* =========================================
            SEARCH
-        ============================== */
+        ========================================= */
 
         .search-box {
+
             margin-top: 15px;
+
             width: 100%;
+
             padding: 12px 14px;
-            border: 1px solid #d1d5db;
+
+            border:
+                1px solid #d1d5db;
+
             border-radius: 7px;
+
             font-size: 14px;
+
         }
 
-        /* ==============================
+
+        /* =========================================
            TABLE
-        ============================== */
+        ========================================= */
+
+        .table-container {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+        }
+
 
         table {
+
             width: 100%;
+
             border-collapse: collapse;
+
             margin-top: 15px;
+
         }
+
 
         th,
         td {
+
             padding: 13px;
-            border-bottom: 1px solid #eee;
+
+            border-bottom:
+                1px solid #eee;
+
             text-align: left;
+
         }
+
 
         th {
+
             background: #f8fafc;
+
         }
+
 
         .action {
+
             display: flex;
+
             gap: 7px;
+
         }
 
-        /* ==============================
+
+        /* =========================================
            STATUS
-        ============================== */
+        ========================================= */
 
         .status {
+
             display: inline-block;
+
             padding: 5px 11px;
+
             border-radius: 20px;
+
             font-size: 12px;
+
             font-weight: bold;
+
         }
+
 
         .status-aktif {
+
             background: #dcfce7;
+
             color: #15803d;
+
         }
+
 
         .status-nonaktif {
+
             background: #fee2e2;
+
             color: #dc2626;
+
         }
 
-        /* ==============================
+
+        .status-kosong {
+
+            background: #f3f4f6;
+
+            color: #666;
+
+        }
+
+
+        /* =========================================
            MESSAGE
-        ============================== */
+        ========================================= */
 
         .message {
+
             margin-top: 12px;
+
             font-size: 14px;
+
         }
+
 
         .success {
+
             color: #15803d;
+
         }
+
 
         .error {
+
             color: #dc2626;
+
         }
+
 
         .loading {
+
             color: #3157d5;
+
         }
 
-        /* ==============================
+
+        /* =========================================
            EMPTY
-        ============================== */
+        ========================================= */
 
         .empty {
+
             text-align: center;
+
             padding: 30px;
+
             color: #888;
+
         }
 
-        /* ==============================
+
+        /* =========================================
            RESPONSIVE
-        ============================== */
+        ========================================= */
 
         @media (max-width: 800px) {
 
             .sidebar {
+
                 width: 190px;
+
             }
+
 
             .content {
+
                 margin-left: 190px;
+
                 padding: 20px;
+
             }
+
 
             .form-row {
+
                 flex-direction: column;
+
             }
 
+
             .summary-container {
+
                 grid-template-columns: 1fr;
+
             }
 
         }
@@ -322,15 +534,21 @@
             MASTER TANKER
         </div>
 
+
         <div class="menu">
 
             <a href="index.html">
                 Dashboard
             </a>
 
-            <a href="tanker.html" class="active">
+
+            <a
+                href="tanker.html"
+                class="active"
+            >
                 Data Tanker
             </a>
+
 
             <a href="download.html">
                 Download Report
@@ -341,15 +559,18 @@
     </div>
 
 
+
     <!-- =========================================
          CONTENT
     ========================================== -->
 
     <div class="content">
 
+
         <h1>
             Data Tanker
         </h1>
+
 
 
         <!-- =====================================
@@ -369,6 +590,7 @@
                         Total Master Tanker
                     </div>
 
+
                     <div
                         class="total"
                         id="totalTanker"
@@ -379,6 +601,7 @@
                 </div>
 
 
+
                 <!-- TOTAL AKTIF -->
 
                 <div class="summary-box">
@@ -386,6 +609,7 @@
                     <div class="summary">
                         Tanker Aktif
                     </div>
+
 
                     <div
                         class="total total-aktif"
@@ -397,6 +621,7 @@
                 </div>
 
 
+
                 <!-- TOTAL NON AKTIF -->
 
                 <div class="summary-box">
@@ -404,6 +629,7 @@
                     <div class="summary">
                         Tanker Non-Aktif
                     </div>
+
 
                     <div
                         class="total total-nonaktif"
@@ -419,6 +645,7 @@
         </div>
 
 
+
         <!-- =====================================
              TAMBAH MASTER TANKER
         ====================================== -->
@@ -429,10 +656,9 @@
                 Tambah Master Tanker
             </h3>
 
+
             <div class="form-row">
 
-
-                <!-- NOMOR -->
 
                 <input
                     type="text"
@@ -441,16 +667,12 @@
                 >
 
 
-                <!-- TANKER NUMBER -->
-
                 <input
                     type="text"
                     id="inputTanker"
                     placeholder="Masukkan Tanker Number"
                 >
 
-
-                <!-- STATUS -->
 
                 <select id="inputStatus">
 
@@ -464,8 +686,6 @@
 
                 </select>
 
-
-                <!-- BUTTON -->
 
                 <button
                     class="btn-add"
@@ -485,6 +705,7 @@
         </div>
 
 
+
         <!-- =====================================
              DAFTAR MASTER TANKER
         ====================================== -->
@@ -496,8 +717,6 @@
             </h3>
 
 
-            <!-- SEARCH -->
-
             <input
                 type="text"
                 id="searchTanker"
@@ -507,44 +726,50 @@
             >
 
 
-            <!-- TABLE -->
+            <div class="table-container">
 
-            <table>
+                <table>
 
-                <thead>
+                    <thead>
 
-                    <tr>
+                        <tr>
 
-                        <th style="width:80px;">
-                            No
-                        </th>
-
-                        <th>
-                            Tanker Number
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                        <th style="width:180px;">
-                            Aksi
-                        </th>
-
-                    </tr>
-
-                </thead>
+                            <th style="width:80px;">
+                                No
+                            </th>
 
 
-                <tbody id="tankerTable">
+                            <th>
+                                Tanker Number
+                            </th>
 
-                </tbody>
 
-            </table>
+                            <th>
+                                Status
+                            </th>
+
+
+                            <th style="width:180px;">
+                                Aksi
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="tankerTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 
     </div>
+
 
 
 <script>
@@ -554,9 +779,13 @@
    KONFIGURASI
 ===================================================== */
 
-const namaFileMaster = "data tanker.xlsx";
+const namaFileMaster =
+    "data tanker.xlsx";
 
-const STORAGE_KEY = "dataTanker";
+
+const STORAGE_KEY =
+    "dataTanker";
+
 
 
 /* =====================================================
@@ -564,6 +793,7 @@ const STORAGE_KEY = "dataTanker";
 ===================================================== */
 
 let dataTanker = [];
+
 
 
 /* =====================================================
@@ -582,6 +812,7 @@ window.addEventListener(
 );
 
 
+
 /* =====================================================
    BACA EXCEL MASTER
 ===================================================== */
@@ -597,16 +828,19 @@ async function bacaExcelMaster() {
     try {
 
 
-        /* ---------------------------------------------
+        /* =============================================
            AMBIL FILE EXCEL
-        --------------------------------------------- */
+        ============================================= */
 
-        const response = await fetch(
-            namaFileMaster + "?v=" + Date.now(),
-            {
-                cache: "no-store"
-            }
-        );
+        const response =
+            await fetch(
+                namaFileMaster +
+                "?v=" +
+                Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
 
 
         if (!response.ok) {
@@ -618,17 +852,17 @@ async function bacaExcelMaster() {
         }
 
 
-        /* ---------------------------------------------
-           BACA FILE SEBAGAI ARRAY BUFFER
-        --------------------------------------------- */
+        /* =============================================
+           BACA FILE
+        ============================================= */
 
         const arrayBuffer =
             await response.arrayBuffer();
 
 
-        /* ---------------------------------------------
+        /* =============================================
            BUKA EXCEL
-        --------------------------------------------- */
+        ============================================= */
 
         const workbook =
             XLSX.read(
@@ -639,18 +873,13 @@ async function bacaExcelMaster() {
             );
 
 
-        /* ---------------------------------------------
-           AMBIL SHEET DATA
-        --------------------------------------------- */
+        /* =============================================
+           PILIH SHEET
+        ============================================= */
 
         let worksheet =
             workbook.Sheets["data"];
 
-
-        /*
-        Kalau tidak ada sheet bernama "data",
-        gunakan sheet pertama.
-        */
 
         if (!worksheet) {
 
@@ -671,19 +900,35 @@ async function bacaExcelMaster() {
         }
 
 
-        /* ---------------------------------------------
-           RANGE EXCEL
-        --------------------------------------------- */
+        /* =============================================
+           BACA EXCEL SEBAGAI ARRAY
+        ============================================= */
 
-        const range =
-            XLSX.utils.decode_range(
-                worksheet["!ref"]
+        const rows =
+            XLSX.utils.sheet_to_json(
+                worksheet,
+                {
+                    header: 1,
+                    defval: ""
+                }
             );
 
 
-        /* ---------------------------------------------
-           ARRAY DATA
-        --------------------------------------------- */
+        console.log(
+            "Jumlah seluruh baris Excel:",
+            rows.length
+        );
+
+
+        console.log(
+            "Header Excel:",
+            rows[0]
+        );
+
+
+        /* =============================================
+           ARRAY DATA MASTER
+        ============================================= */
 
         const daftarTanker = [];
 
@@ -692,140 +937,104 @@ async function bacaExcelMaster() {
 
         STRUKTUR EXCEL:
 
-        Kolom A = Kolom 1 = Nomor
-        Kolom B = Kolom 2 = Tanker Number
-        Kolom M = Kolom 13 = Status
+        A = index 0 = Nomor
+        B = index 1 = Tanker Number
+        C = index 2
+        D = index 3
+        E = index 4
+        F = index 5
+        G = index 6
+        H = index 7
+        I = index 8
+        J = index 9
+        K = index 10
+        L = index 11
+        M = index 12 = Type
+        N = index 13 = Status
 
-        Kolom C sampai L TIDAK DIBACA.
 
-        Baris 1 dianggap HEADER.
+        JADI:
 
-        Jadi pembacaan dimulai dari baris 2.
+        Total Master Tanker
+        = jumlah isi kolom B
+
+
+        Status
+        = kolom N
 
         */
 
 
         for (
-            let rowIndex = 1;
-            rowIndex <= range.e.r;
-            rowIndex++
+            let i = 1;
+            i < rows.length;
+            i++
         ) {
 
 
-            /* -----------------------------------------
-               KOLOM 1 / A = NOMOR
-            ----------------------------------------- */
-
-            const cellNomor =
-                worksheet[
-                    XLSX.utils.encode_cell({
-                        r: rowIndex,
-                        c: 0
-                    })
-                ];
+            const row =
+                rows[i];
 
 
-            /* -----------------------------------------
-               KOLOM 2 / B = TANKER NUMBER
-            ----------------------------------------- */
+            /* =========================================
+               KOLOM A
+               NOMOR
+            ========================================= */
 
-            const cellTanker =
-                worksheet[
-                    XLSX.utils.encode_cell({
-                        r: rowIndex,
-                        c: 1
-                    })
-                ];
+            const nomor =
+                String(
+                    row[0] ?? ""
+                ).trim();
 
 
-            /* -----------------------------------------
-               KOLOM 13 / M = STATUS
-            ----------------------------------------- */
-
-            const cellStatus =
-                worksheet[
-                    XLSX.utils.encode_cell({
-                        r: rowIndex,
-                        c: 12
-                    })
-                ];
-
-
-            /* -----------------------------------------
-               AMBIL NILAI NOMOR
-            ----------------------------------------- */
-
-            let nomor = "";
-
-            if (
-                cellNomor &&
-                cellNomor.v !== undefined &&
-                cellNomor.v !== null
-            ) {
-
-                nomor =
-                    String(
-                        cellNomor.v
-                    ).trim();
-
-            }
-
-
-            /* -----------------------------------------
-               AMBIL NILAI TANKER
-            ----------------------------------------- */
-
-            let tanker = "";
-
-            if (
-                cellTanker &&
-                cellTanker.v !== undefined &&
-                cellTanker.v !== null
-            ) {
-
-                tanker =
-                    String(
-                        cellTanker.v
-                    ).trim();
-
-            }
-
-
-            /* -----------------------------------------
-               AMBIL NILAI STATUS
-            ----------------------------------------- */
-
-            let status = "";
-
-            if (
-                cellStatus &&
-                cellStatus.v !== undefined &&
-                cellStatus.v !== null
-            ) {
-
-                status =
-                    String(
-                        cellStatus.v
-                    ).trim()
-                    .toUpperCase();
-
-            }
-
-
-            /* -----------------------------------------
-               HANYA MASUKKAN DATA YANG MEMILIKI
+            /* =========================================
+               KOLOM B
                TANKER NUMBER
-            ----------------------------------------- */
+               
+               INI YANG MENENTUKAN
+               TOTAL MASTER TANKER
+            ========================================= */
 
-            if (tanker !== "") {
+            const tanker =
+                String(
+                    row[1] ?? ""
+                ).trim();
+
+
+            /* =========================================
+               KOLOM N
+               STATUS
+            ========================================= */
+
+            const status =
+                String(
+                    row[13] ?? ""
+                )
+                .trim()
+                .toUpperCase();
+
+
+            /* =========================================
+               HANYA DATA DENGAN TANKER NUMBER
+               
+               Kalau kolom B kosong,
+               TIDAK dihitung sebagai master tanker.
+            ========================================= */
+
+            if (
+                tanker !== ""
+            ) {
 
                 daftarTanker.push({
 
-                    nomor: nomor,
+                    nomor:
+                        nomor,
 
-                    tanker: tanker,
+                    tanker:
+                        tanker,
 
-                    status: status
+                    status:
+                        status
 
                 });
 
@@ -834,11 +1043,19 @@ async function bacaExcelMaster() {
         }
 
 
-        /* ---------------------------------------------
-           URUTKAN BERDASARKAN TANKER NUMBER
-        --------------------------------------------- */
+        /* =============================================
+           SIMPAN DATA
+        ============================================= */
 
-        daftarTanker.sort(
+        dataTanker =
+            daftarTanker;
+
+
+        /* =============================================
+           URUTKAN TANKER NUMBER
+        ============================================= */
+
+        dataTanker.sort(
             function (a, b) {
 
                 return a.tanker.localeCompare(
@@ -854,76 +1071,137 @@ async function bacaExcelMaster() {
         );
 
 
-        /* ---------------------------------------------
-           SIMPAN KE DATA UTAMA
-        --------------------------------------------- */
-
-        dataTanker =
-            daftarTanker;
-
-
-        /* ---------------------------------------------
+        /* =============================================
            SIMPAN KE LOCAL STORAGE
-        --------------------------------------------- */
+        ============================================= */
 
         localStorage.setItem(
             STORAGE_KEY,
-            JSON.stringify(dataTanker)
+            JSON.stringify(
+                dataTanker
+            )
         );
 
 
-        /* ---------------------------------------------
-           TAMPILKAN DATA
-        --------------------------------------------- */
+        /* =============================================
+           HITUNG JUMLAH
+        ============================================= */
+
+        const jumlahTotal =
+            dataTanker.length;
+
+
+        const jumlahAktif =
+            dataTanker.filter(
+                function (item) {
+
+                    return (
+                        item.status ===
+                        "AKTIF"
+                    );
+
+                }
+            ).length;
+
+
+        const jumlahNonAktif =
+            dataTanker.filter(
+                function (item) {
+
+                    return (
+                        item.status ===
+                        "NON-AKTIF"
+                    );
+
+                }
+            ).length;
+
+
+        /* =============================================
+           DEBUG
+        ============================================= */
+
+        console.log(
+            "=============================="
+        );
+
+
+        console.log(
+            "TOTAL MASTER TANKER:",
+            jumlahTotal
+        );
+
+
+        console.log(
+            "TOTAL AKTIF:",
+            jumlahAktif
+        );
+
+
+        console.log(
+            "TOTAL NON-AKTIF:",
+            jumlahNonAktif
+        );
+
+
+        console.log(
+            "=============================="
+        );
+
+
+        /* =============================================
+           CEK STATUS UNIK
+        ============================================= */
+
+        const statusUnik =
+            [
+                ...new Set(
+                    dataTanker.map(
+                        function (item) {
+
+                            return item.status;
+
+                        }
+                    )
+                )
+            ];
+
+
+        console.log(
+            "STATUS YANG TERBACA:",
+            statusUnik
+        );
+
+
+        /* =============================================
+           TAMPILKAN
+        ============================================= */
 
         tampilkanData();
 
 
-        /* ---------------------------------------------
-           PESAN BERHASIL
-        --------------------------------------------- */
-
         tampilkanPesan(
             "Data Master Tanker berhasil diperbarui dari Excel. Total: " +
-            dataTanker.length +
+            jumlahTotal +
             " tanker.",
             "success"
         );
 
-
-        /* ---------------------------------------------
-           CONSOLE UNTUK PENGECEKAN
-        --------------------------------------------- */
-
-        console.log(
-            "Jumlah seluruh baris Excel:",
-            range.e.r + 1
-        );
-
-
-        console.log(
-            "Jumlah Master Tanker:",
-            dataTanker.length
-        );
-
-
-        console.log(
-            "Data Master Tanker:",
-            dataTanker
-        );
-
-
     }
+
 
     catch (error) {
 
 
-        console.error(error);
+        console.error(
+            "ERROR BACA EXCEL:",
+            error
+        );
 
 
-        /* ---------------------------------------------
-           JIKA EXCEL GAGAL DIBACA
-        --------------------------------------------- */
+        /* =============================================
+           JIKA EXCEL GAGAL
+        ============================================= */
 
         const dataLama =
             localStorage.getItem(
@@ -931,7 +1209,9 @@ async function bacaExcelMaster() {
             );
 
 
-        if (dataLama) {
+        if (
+            dataLama
+        ) {
 
             try {
 
@@ -942,7 +1222,9 @@ async function bacaExcelMaster() {
 
             }
 
-            catch {
+            catch (
+                error
+            ) {
 
                 dataTanker = [];
 
@@ -971,31 +1253,6 @@ async function bacaExcelMaster() {
 }
 
 
-/* =====================================================
-   CEK APAKAH STATUS AKTIF
-===================================================== */
-
-function isAktif(status) {
-
-    return String(status)
-        .trim()
-        .toUpperCase() === "AKTIF";
-
-}
-
-
-/* =====================================================
-   CEK APAKAH STATUS NON-AKTIF
-===================================================== */
-
-function isNonAktif(status) {
-
-    return String(status)
-        .trim()
-        .toUpperCase() === "NON-AKTIF";
-
-}
-
 
 /* =====================================================
    TAMPILKAN DATA
@@ -1004,9 +1261,9 @@ function isNonAktif(status) {
 function tampilkanData() {
 
 
-    /* ---------------------------------------------
-       AMBIL ELEMENT HTML
-    --------------------------------------------- */
+    /* =============================================
+       ELEMENT HTML
+    ============================================= */
 
     const table =
         document.getElementById(
@@ -1038,9 +1295,9 @@ function tampilkanData() {
         );
 
 
-    /* ---------------------------------------------
-       NILAI PENCARIAN
-    --------------------------------------------- */
+    /* =============================================
+       SEARCH
+    ============================================= */
 
     const kataCari =
         search
@@ -1050,49 +1307,59 @@ function tampilkanData() {
             : "";
 
 
-    /* ---------------------------------------------
-       HITUNG TOTAL MASTER TANKER
-    --------------------------------------------- */
+    /* =============================================
+       TOTAL MASTER TANKER
+       
+       BERDASARKAN JUMLAH DATA
+       YANG MEMILIKI TANKER NUMBER
+       DI KOLOM B.
+    ============================================= */
 
     const jumlahTotal =
         dataTanker.length;
 
 
-    /* ---------------------------------------------
-       HITUNG AKTIF
-    --------------------------------------------- */
+    /* =============================================
+       TOTAL AKTIF
+       
+       STATUS HARUS "AKTIF"
+    ============================================= */
 
     const jumlahAktif =
         dataTanker.filter(
             function (item) {
 
-                return isAktif(
-                    item.status
+                return (
+                    item.status ===
+                    "AKTIF"
                 );
 
             }
         ).length;
 
 
-    /* ---------------------------------------------
-       HITUNG NON-AKTIF
-    --------------------------------------------- */
+    /* =============================================
+       TOTAL NON-AKTIF
+       
+       STATUS HARUS "NON-AKTIF"
+    ============================================= */
 
     const jumlahNonAktif =
         dataTanker.filter(
             function (item) {
 
-                return isNonAktif(
-                    item.status
+                return (
+                    item.status ===
+                    "NON-AKTIF"
                 );
 
             }
         ).length;
 
 
-    /* ---------------------------------------------
+    /* =============================================
        TAMPILKAN SUMMARY
-    --------------------------------------------- */
+    ============================================= */
 
     total.textContent =
         jumlahTotal;
@@ -1106,9 +1373,9 @@ function tampilkanData() {
         jumlahNonAktif;
 
 
-    /* ---------------------------------------------
-       FILTER DATA BERDASARKAN SEARCH
-    --------------------------------------------- */
+    /* =============================================
+       FILTER SEARCH
+    ============================================= */
 
     const dataTampil =
         dataTanker.filter(
@@ -1124,16 +1391,16 @@ function tampilkanData() {
         );
 
 
-    /* ---------------------------------------------
+    /* =============================================
        KOSONGKAN TABLE
-    --------------------------------------------- */
+    ============================================= */
 
     table.innerHTML = "";
 
 
-    /* ---------------------------------------------
+    /* =============================================
        JIKA TIDAK ADA DATA
-    --------------------------------------------- */
+    ============================================= */
 
     if (
         dataTampil.length === 0
@@ -1148,7 +1415,8 @@ function tampilkanData() {
                     class="empty"
                 >
 
-                    Tidak ada tanker yang ditemukan.
+                    Tidak ada tanker
+                    yang ditemukan.
 
                 </td>
 
@@ -1161,9 +1429,9 @@ function tampilkanData() {
     }
 
 
-    /* ---------------------------------------------
-       TAMPILKAN DATA
-    --------------------------------------------- */
+    /* =============================================
+       TAMPILKAN SETIAP DATA
+    ============================================= */
 
     dataTampil.forEach(
         function (item) {
@@ -1181,18 +1449,17 @@ function tampilkanData() {
                 );
 
 
-            /* -----------------------------------------
-               CLASS STATUS
-            ----------------------------------------- */
+            /* =====================================
+               STATUS CLASS
+            ===================================== */
 
             let statusClass =
-                "status-nonaktif";
+                "status-kosong";
 
 
             if (
-                isAktif(
-                    item.status
-                )
+                item.status ===
+                "AKTIF"
             ) {
 
                 statusClass =
@@ -1201,33 +1468,50 @@ function tampilkanData() {
             }
 
 
-            /* -----------------------------------------
-               HTML ROW
-            ----------------------------------------- */
+            else if (
+                item.status ===
+                "NON-AKTIF"
+            ) {
+
+                statusClass =
+                    "status-nonaktif";
+
+            }
+
+
+            /* =====================================
+               BUAT ROW
+            ===================================== */
 
             row.innerHTML = `
 
                 <td>
-                    ${item.nomor || index + 1}
+                    ${item.nomor}
                 </td>
+
 
                 <td>
                     ${item.tanker}
                 </td>
+
 
                 <td>
 
                     <span
                         class="status ${statusClass}"
                     >
+
                         ${item.status || "-"}
+
                     </span>
 
                 </td>
 
+
                 <td>
 
                     <div class="action">
+
 
                         <button
                             class="btn-edit"
@@ -1236,12 +1520,14 @@ function tampilkanData() {
                             Edit
                         </button>
 
+
                         <button
                             class="btn-delete"
                             onclick="hapusTanker(${index})"
                         >
                             Hapus
                         </button>
+
 
                     </div>
 
@@ -1258,6 +1544,7 @@ function tampilkanData() {
     );
 
 }
+
 
 
 /* =====================================================
@@ -1297,9 +1584,9 @@ function tambahTanker() {
         inputStatus.value;
 
 
-    /* ---------------------------------------------
+    /* =============================================
        CEK TANKER NUMBER
-    --------------------------------------------- */
+    ============================================= */
 
     if (
         tanker === ""
@@ -1315,23 +1602,27 @@ function tambahTanker() {
     }
 
 
-    /* ---------------------------------------------
+    /* =============================================
        CEK DUPLIKAT
-    --------------------------------------------- */
+    ============================================= */
 
     const sudahAda =
         dataTanker.some(
             function (item) {
 
-                return item.tanker
-                    .toLowerCase() ===
-                    tanker.toLowerCase();
+                return (
+                    item.tanker
+                        .toLowerCase() ===
+                    tanker.toLowerCase()
+                );
 
             }
         );
 
 
-    if (sudahAda) {
+    if (
+        sudahAda
+    ) {
 
         tampilkanPesan(
             "Nomor tanker tersebut sudah ada.",
@@ -1343,9 +1634,9 @@ function tambahTanker() {
     }
 
 
-    /* ---------------------------------------------
-       TAMBAHKAN DATA
-    --------------------------------------------- */
+    /* =============================================
+       TAMBAHKAN
+    ============================================= */
 
     dataTanker.push({
 
@@ -1364,9 +1655,9 @@ function tambahTanker() {
     });
 
 
-    /* ---------------------------------------------
+    /* =============================================
        URUTKAN
-    --------------------------------------------- */
+    ============================================= */
 
     dataTanker.sort(
         function (a, b) {
@@ -1384,9 +1675,9 @@ function tambahTanker() {
     );
 
 
-    /* ---------------------------------------------
+    /* =============================================
        SIMPAN
-    --------------------------------------------- */
+    ============================================= */
 
     localStorage.setItem(
         STORAGE_KEY,
@@ -1396,18 +1687,18 @@ function tambahTanker() {
     );
 
 
-    /* ---------------------------------------------
-       KOSONGKAN INPUT
-    --------------------------------------------- */
+    /* =============================================
+       RESET INPUT
+    ============================================= */
 
     inputNomor.value = "";
 
     inputTanker.value = "";
 
 
-    /* ---------------------------------------------
-       UPDATE TABLE
-    --------------------------------------------- */
+    /* =============================================
+       UPDATE
+    ============================================= */
 
     tampilkanData();
 
@@ -1420,20 +1711,23 @@ function tambahTanker() {
 }
 
 
+
 /* =====================================================
    EDIT TANKER
 ===================================================== */
 
-function editTanker(index) {
+function editTanker(
+    index
+) {
 
 
     const item =
         dataTanker[index];
 
 
-    /* ---------------------------------------------
+    /* =============================================
        EDIT TANKER NUMBER
-    --------------------------------------------- */
+    ============================================= */
 
     const tankerBaru =
         prompt(
@@ -1468,26 +1762,34 @@ function editTanker(index) {
     }
 
 
-    /* ---------------------------------------------
+    /* =============================================
        CEK DUPLIKAT
-    --------------------------------------------- */
+    ============================================= */
 
     const duplikat =
         dataTanker.some(
-            function (data, i) {
+            function (
+                data,
+                i
+            ) {
 
                 return (
+
                     i !== index &&
+
                     data.tanker
                         .toLowerCase() ===
                     tanker.toLowerCase()
+
                 );
 
             }
         );
 
 
-    if (duplikat) {
+    if (
+        duplikat
+    ) {
 
         alert(
             "Nomor tanker tersebut sudah ada."
@@ -1498,13 +1800,14 @@ function editTanker(index) {
     }
 
 
-    /* ---------------------------------------------
+    /* =============================================
        EDIT STATUS
-    --------------------------------------------- */
+    ============================================= */
 
     const statusBaru =
         prompt(
-            "Edit Status:\n\nKetik AKTIF atau NON-AKTIF",
+            "Edit Status:\n\n" +
+            "Ketik AKTIF atau NON-AKTIF",
             item.status
         );
 
@@ -1524,9 +1827,9 @@ function editTanker(index) {
             .toUpperCase();
 
 
-    /* ---------------------------------------------
+    /* =============================================
        VALIDASI STATUS
-    --------------------------------------------- */
+    ============================================= */
 
     if (
         status !== "AKTIF" &&
@@ -1542,9 +1845,9 @@ function editTanker(index) {
     }
 
 
-    /* ---------------------------------------------
+    /* =============================================
        UPDATE DATA
-    --------------------------------------------- */
+    ============================================= */
 
     dataTanker[index].tanker =
         tanker;
@@ -1554,9 +1857,9 @@ function editTanker(index) {
         status;
 
 
-    /* ---------------------------------------------
+    /* =============================================
        SIMPAN
-    --------------------------------------------- */
+    ============================================= */
 
     localStorage.setItem(
         STORAGE_KEY,
@@ -1566,9 +1869,9 @@ function editTanker(index) {
     );
 
 
-    /* ---------------------------------------------
+    /* =============================================
        UPDATE TAMPILAN
-    --------------------------------------------- */
+    ============================================= */
 
     tampilkanData();
 
@@ -1581,11 +1884,14 @@ function editTanker(index) {
 }
 
 
+
 /* =====================================================
    HAPUS TANKER
 ===================================================== */
 
-function hapusTanker(index) {
+function hapusTanker(
+    index
+) {
 
 
     const item =
@@ -1609,9 +1915,9 @@ function hapusTanker(index) {
     }
 
 
-    /* ---------------------------------------------
+    /* =============================================
        HAPUS
-    --------------------------------------------- */
+    ============================================= */
 
     dataTanker.splice(
         index,
@@ -1619,9 +1925,9 @@ function hapusTanker(index) {
     );
 
 
-    /* ---------------------------------------------
+    /* =============================================
        SIMPAN
-    --------------------------------------------- */
+    ============================================= */
 
     localStorage.setItem(
         STORAGE_KEY,
@@ -1631,9 +1937,9 @@ function hapusTanker(index) {
     );
 
 
-    /* ---------------------------------------------
-       UPDATE TAMPILAN
-    --------------------------------------------- */
+    /* =============================================
+       UPDATE
+    ============================================= */
 
     tampilkanData();
 
@@ -1644,6 +1950,7 @@ function hapusTanker(index) {
     );
 
 }
+
 
 
 /* =====================================================
